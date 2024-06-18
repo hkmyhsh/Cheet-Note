@@ -61,3 +61,18 @@
   - `ln -s file1.txt file2.txt`
 - シンボリックリンクの確認
   - `ls -l file2.txt`
+
+# ファイルシステムの使い方
+- パーティションを作成する
+  -`fdisk /dev/sdb`
+    - `/dev/sdb1`みたいに作成される 
+- ファイルシステム作成する
+  - `mke2fs -t ext4 /dev/sdb1`
+- ディレクトリを作成してマウントする
+  - `mkdir /datadisk1`
+  - `mount /dev/sdb1 /datadisk1`
+- （FATでフォーマットされたUSBメモリやポータブルHDD/SSDの場合）`/mnt/`下のディレクトリをマウントする
+  - `mkdir /mnt/usbmem1`
+  - `mount -t vfat /dev/sdf1 /mnt/usbmem1`
+- 自動マウント
+  - `/etc/fstab`を更新
