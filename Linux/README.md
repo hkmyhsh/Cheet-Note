@@ -40,3 +40,7 @@
   - `ls april >> ~/ls.txt`
 - 標準エラー出力
   - `ls /abcdefg 2 > ~/error.txt`
+
+# パイプ機能
+- **コマンドの標準出力**を標準入力へ渡す
+  - `ls -l | less`
