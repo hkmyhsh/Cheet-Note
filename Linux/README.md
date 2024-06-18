@@ -22,6 +22,16 @@
   - 大文字小文字区別なく検索
     - `grep -i cat animals.txt`
 
+# ファイルの圧縮と展開
+- ファイルのアーカイブと圧縮
+  - `tar -czf 2.tar.gz a.txt b.txt`
+  - アーカイブ
+    - `tar -cf 2.tar.gz a.txt b.txt`
+  - 圧縮
+    - `gzip 2.tar`
+- 圧縮ファイルの展開
+  - `tar -xzf 2.tar.gz`
+
 # ファイル / ディレクトリの検索
 - カレントディレクトリ下のファイルを検索する
   - `find . -name nikki.htmi -print`
@@ -44,3 +54,10 @@
 # パイプ機能
 - **コマンドの標準出力**を標準入力へ渡す
   - `ls -l | less`
+
+# シンボリックリンク
+- シンボリックリンクの作成
+  - `ln -s リンク元のファイル リンク先のファイル` 
+  - `ln -s file1.txt file2.txt`
+- シンボリックリンクの確認
+  - `ls -l file2.txt`
