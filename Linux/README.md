@@ -38,3 +38,5 @@
 - `ls > ~/ls.txt`
 - 追加保存
   - `ls april >> ~/ls.txt`
+- 標準エラー出力
+  - `ls /abcdefg 2 > ~/error.txt`
