@@ -22,8 +22,19 @@
   - 大文字小文字区別なく検索
     - `grep -i cat animals.txt`
 
-# ファイルの検索
+# ファイル / ディレクトリの検索
 - カレントディレクトリ下のファイルを検索する
   - `find . -name nikki.htmi -print`
   - ワイルドカード検索
     - `find . -name *.htmi -print`
+- カレントディレクトリ下のディレクトリを検索する
+  - `find . -type d -print`
+  - 空のディレクトリのみを検索
+    - `find . -type d -empty -print`
+- カレントディレクトリ下の3日前から現在までに作成したファイルを検索する
+  - `find . -mtime -3 -print`
+
+# リダイレクトをファイルに保存
+- `ls > ~/ls.txt`
+- 追加保存
+  - `ls april >> ~/ls.txt`
