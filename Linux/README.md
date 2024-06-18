@@ -44,6 +44,25 @@
 - カレントディレクトリ下の3日前から現在までに作成したファイルを検索する
   - `find . -mtime -3 -print`
 
+# プロセス関連
+- プロセスの一覧
+  - `ps -aux`
+- プロセス終了
+  - `kill {プロセスID}`
+
+# ユニットとサービス（デーモン）の管理
+- 起動
+  - `systemctl start ユニット名`
+- 終了
+  - `systemctl stop ユニット名`
+- 強制終了
+  - `systemctl kill -s 9 ユニット名`
+- 再起動
+  - `systemctl restart ユニット名`
+- サービス一覧の表示
+  - `systemctl -t service`
+  - `systemctl --type service`
+
 # リダイレクトをファイルに保存
 - `ls > ~/ls.txt`
 - 追加保存
