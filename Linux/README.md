@@ -25,7 +25,20 @@
 - `info [調べたいコマンド]`
   - 「h」で使用方法の説明
   - 「/」または「s」で文書内検索
- 
+
+# 過去のコマンドを掘り起こす
+- コマンド履歴の表示
+  - `history`
+- 最近の3つのコマンドを表示する
+  - 'history 3'
+- 履歴を一度に1画面ずつ表示する
+  - `history | less`
+  - `history | sort -nr | less`
+- 特定文字だけ含んでいるコマンドだけ表示する
+  - `history | grep -w [特定文字]`
+- コマンド履歴の削除
+  - `history -c`
+
 # ログのERROR調査
 - `journalctl --no-pager | grep -i ERROR`
 - `grep -iR ERROR /var/log`
