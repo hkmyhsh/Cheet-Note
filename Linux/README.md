@@ -1,3 +1,21 @@
+# シンプルなコマンド
+- 現在のシェルの表示
+  - `echo $0`
+- OS確認
+  - `cat /etc/os-release`
+- パッケージの更新とアップグレード
+  - `sudo apt update && sudo apt -y upgrade` 
+  - `sudo yum update && sudo yum -y upgrade`
+- パッケージのインストール
+  - `sudo apt -y install [パッケージ名]` 
+  - `sudo yum -y install [パッケージ名]`
+
+# コマンドを調べる際
+- `man [調べたいコマンド]`
+- `info [調べたいコマンド]`
+  - 「h」で使用方法の説明
+  - 「/」または「s」で文書内検索
+
 # 既存のPATHに新たなディレクトリを追加
 - PATH="$PATH:「追加するPATH名」"
   - `PATH="$PATH:~/bin"`
@@ -70,10 +88,6 @@
 - 標準エラー出力
   - `ls /abcdefg 2 > ~/error.txt`
 
-# パイプ機能
-- **コマンドの標準出力**を標準入力へ渡す
-  - `ls -l | less`
-
 # シンボリックリンク
 - シンボリックリンクの作成
   - `ln -s リンク元のファイル リンク先のファイル` 
@@ -95,3 +109,16 @@
   - `mount -t vfat /dev/sdf1 /mnt/usbmem1`
 - 自動マウント
   - `/etc/fstab`を更新
+
+# パイプ機能
+- **コマンドの標準出力**を標準入力へ渡す
+  - `ls -l | less`
+
+# パイプを利用した各種コマンド
+- ファイルの行数を数える
+  - `cat [任意のテキスト形式のファイル] | wc -l`
+- 大量の出力結果を表示したい
+  - `ls --help | less`
+
+# `grep`コマンドの活用
+
