@@ -30,3 +30,29 @@ do
 done
 ```
 
+# サービスの稼働状況を確認
+```
+#!/usr/bin/env bash
+
+# チェック先の設定
+# チェック先の@[IPアドレス（またはホスト名）]:[ポート番号]の形式で列挙する
+# ポート番号443: httpサービス
+LIST="www.shoeisha.co.jp:443
+raintrees.net:80
+raintrees.net:8080
+192.168.1.1:443
+sample.example.com:443"
+
+#「チェック先に接続できるか確認する」をチェック先分ループで繰り返す
+for TARGET in $LIST
+do
+  echo "----- $TARGET -----" # 接続先の表示
+  nc -w 1 -z ${TARGET//:/ } # チェック先に接続できるかncで確認
+  if [$? -eq 0 ] # ncの実行結果を判定、0が正常終了
+    then
+      echo "◯ サービスが稼働しています"
+    else
+      echo "× サービスが稼働していません"
+  fi
+done
+```
