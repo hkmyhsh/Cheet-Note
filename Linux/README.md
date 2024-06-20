@@ -12,7 +12,11 @@
   - `sudo apt -y install [パッケージ名]` 
   - `sudo yum -y install [パッケージ名]`
 - エラーメッセージを出したくない時
-  - `2>/dev/null` をコマンドの後につける
+  - `2> /dev/null` をコマンドの後につける
+- エラーメッセージを収集したい場合
+  - `2> [エラーを集める用のファイル]`
+- １つの文字の置換
+  - `echo $PATH | tr : "¥n"`
 - 文字列を置換する
   - `sed's/[置換元の文字列]/[置換後の文字列]/g' [置換元ファイル]`
 
@@ -68,17 +72,20 @@
 - 特定日まで後何日か計算
   - `echo $((($(date +%s -d 'yyyy/mm/dd')-$(date +%s))/(60*60*24)))`
 
-# 既存のPATHに新たなディレクトリを追加
-- PATH="$PATH:「追加するPATH名」"
-  - `PATH="$PATH:~/bin"`
-
 # 環境変数
 - 設定
   - `export prof=~/prof.txt
+- 既存のPATHに新たなディレクトリを追加
+  - PATH="$PATH:「追加するPATH名」"
+    - `PATH="$PATH:~/bin"`
+- $PATHを見やすくする
+  - echo $PATH | tr : "¥n"
 - 呼び出し
   - `$prof`
 - 一覧表示
   - `printenv`
+- 個別表示
+  - `printenv HOME`
 
 # ファイルの中身表示
 - ファイルの先頭10行表示
