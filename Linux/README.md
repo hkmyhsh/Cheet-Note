@@ -15,6 +15,10 @@
 - `info [調べたいコマンド]`
   - 「h」で使用方法の説明
   - 「/」または「s」で文書内検索
+ 
+# ログのERROR調査
+- `journalctl --no-pager | grep -i ERROR`
+- `grep -iR ERROR /var/log`
 
 # 日数の計算
 - 1日後
@@ -41,6 +45,10 @@
   - `date -d "n weeks ago　yyyy/mm/dd"`
 - 特定日からn月前
   - `date -d "n months ago　yyyy/mm/dd"`
+- UNIX時間の確認
+  - `date +%s`
+- 特定日のUNIX時間
+  - `date +%s -d yyyy/mm/dd`
 - 特定日まで後何日か計算
   - `echo $((($(date +%s -d 'yyyy/mm/dd')-$(date +%s))/(60*60*24)))`
 
@@ -67,6 +75,10 @@
   - `grep cat animals.txt`
   - 大文字小文字区別なく検索
     - `grep -i cat animals.txt`
+
+# ファイル操作
+- 特定のファイルを探す
+  - `find [検索対象のディレクトリ] -name [検索対象のファイル] 2>/dev/null`
 
 # ファイルの圧縮と展開
 - ファイルのアーカイブと圧縮
