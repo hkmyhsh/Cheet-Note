@@ -356,6 +356,18 @@
 - 正規表現で複数ファイルを対象に検索
   - grep " 503 " *.txt
 
+# awkコマンド
+- 基本的な使い方
+  - `echo Efficient fun Linux | awk "{print $1 $3}"` # スペースなし
+    - `EfficientLinux`
+  - `echo Efficient fun Linux | awk "{print $1, $3}"` #スペースあり
+    - `Efficient Linux`
+- **整然とした列から逸脱した列から逸脱したコマンド出力**を処理するのに最適
+  - `df / /data | awk "{print $4}"`
+- セパレータを任意の**正規表現**に変更可能
+  - `echo efficient::::::linux | awk -F":*" "{print $2}"`
+    - `linux`
+
 # 重複ファイルの検出
 - 特定ファイルのチェックサム
   - 'md5sum image001.jpg'
