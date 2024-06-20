@@ -56,3 +56,19 @@ do
   fi
 done
 ```
+
+# バックアップファイル作成
+```
+#!/bin/sh
+
+BACKUP_DATE=$(date +%Y%m%d)
+BACKUP_DIR="/tmp" # バックアップファイルの格納先
+BACKUP_LIST="/home/user/source /home/user/def" # 任意のバックアップ対象のディレクトリ
+
+for WORD in ${BACKUP_LIST}
+do
+  WORK=$(basename ${WORD})
+  cd $(dirname ${WORD})
+  zip -r ${BACKUP_DIR}/backup_${BACKUP_DATE}_${WORK}.zip ${WORK}
+done
+```
