@@ -16,6 +16,34 @@
   - 「h」で使用方法の説明
   - 「/」または「s」で文書内検索
 
+# 日数の計算
+- 1日後
+  - `date -d "1 day"`
+  - `date -d tomorrow`
+- n日後
+  - `date -d "n days"`
+- n週後
+  - `date -d "n weeks"
+- n月後
+  - `date -d "n months"
+- n日前
+  - `date -d "-n days"`
+  - `date -d "n days ago"`
+- n週前
+  - `date -d "-n weeks"
+  - `date -d "n weeks ago"`
+- n月前
+  - `date -d "-n months"
+  - `date -d "n months ago"`
+- 特定日からn日前
+  - `date -d "n days ago　yyyy/mm/dd"`
+- 特定日からn週前
+  - `date -d "n weeks ago　yyyy/mm/dd"`
+- 特定日からn月前
+  - `date -d "n months ago　yyyy/mm/dd"`
+- 特定日まで後何日か計算
+  - `echo $((($(date +%s -d 'yyyy/mm/dd')-$(date +%s))/(60*60*24)))`
+
 # 既存のPATHに新たなディレクトリを追加
 - PATH="$PATH:「追加するPATH名」"
   - `PATH="$PATH:~/bin"`
