@@ -121,4 +121,10 @@
   - `ls --help | less`
 
 # `grep`コマンドの活用
-
+- [基本]特定の文字列が含まれる行を探す
+  - `grep [探したい文字列] [ファイル名]`
+- 検索結果の行数が長い場合
+  - 'less'で表示
+    - `cat access.log | grep " 503 " | less`
+- 検索結果の行数をカウント
+  - `cat access.log | grep " 503 " | wc -l`
