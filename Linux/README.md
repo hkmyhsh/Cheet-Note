@@ -171,6 +171,16 @@
   - `sed 10q myfile`
 - 行番号が10以下の間だけ表示する
   - `awk "FNR<=20" myfile`
+- 各行の最後の単語をそのまま表示する（指定されたアクションを実行する）
+  - `awk "{print $NF}" members`
+- アクションを持たない場合はデフォルトのアクション`{print}'を実行する
+  - echo efficient linux | awk `/efficient/`
+- 入力セパレーターをスペースからタブ（¥t）に変更して列を並び替える
+  - `awk -F"¥t" "{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
+  - 特定の文字列で始まる行だけを処理する（例: horse）
+    - `awk -F"¥t" "/^horse/{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
+  - 特定のカラムが特定の文字列で始まる行だけを処理する
+    - `awk -F"¥t" "$3/^201/{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
 
 # テキストの変換
 - 文字を別の文字に変換する（例: コロンを改行する）
@@ -184,6 +194,7 @@
   - `echo image.jpg | sed"s/¥.jpg/¥.png/"`
 - 標準入力された単語を入れ替える
   - 'echo "linux efficient" | awk "{print $2 $1}"'
+
 
 # ファイルの中身表示
 - ファイルの**先頭10行**表示
@@ -402,6 +413,14 @@
   - 'md5sum *.jpg | cut -c1-32 | sort | uniq -c | sort -nr'
 - 重複しているファイルのチェックサムのみを表示する
   - 'md5sum *.jpg | cut -c1-32 | sort | uniq -c | sort -nr | grep -v "      1 "'
+  - **これをawkで簡略化する**
+    - ```
+      md5sum *.jpg ¥
+      | awk `{counts[$1]++; names[$1]=names[$1] " " $2} ¥
+             END {for (key in counts) print counts[key] " " key ":" names[key]}` ¥
+      | grep -v "^1 " ¥
+      | sort -nr
+      ```
 - 特定のチェックサムのファイルを表示
   - `m5sum *.jpg | grep [チェックサム番号] | cut -c35-`
 
