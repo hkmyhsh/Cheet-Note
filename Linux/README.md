@@ -23,8 +23,33 @@
   - `cd -`
 
 # 小ネタ
-- 最初のコマンドが成功した時のみ次のコマンドを実行したい
+- 最初のコマンドが**成功した時のみ**次のコマンドを実行したい
   - `cd dir && touch new.txt`
+- 最初のコマンドが**失敗した時のみ**次のコマンドを実行したい
+  - `cd dir || mkdir dir`
+- すべてのコマンドが失敗した時のみエラーメッセージが出力したい
+  - `cd dir || mkdir dir && cd dir || echo "I failed"`
+- 最初のコマンドの**成功、失敗に関係なく**次のコマンドを実行したい
+  - `sleep7200; cp -a ~/important-files /mnt/backup_drive`
+- コマンド置換（$()内のコマンドを実行し結果を置き換える）
+  - `mv $(grep -l "Artist: Kansas" *.txt) kansas`
+- コマンド置換で変数に値を格納する（$()内のコマンドを実行し結果を置き換える）
+  - `kansasFiles=$(grep -l "Artist: Kansas" *.txt)`
+    - **[注意]出力結果が複数行になる可能性があるので変数使用時には引用符で囲むこと**
+      - `echo "$kansasFiles"`
+- **<(any command here)コマンドをサブシェル内で実行し、その出力結果があたかもファイルに含まれていたかのように**提示する
+  - ```
+    diff <(ls *.jpg | sort -n) <(seq 1 1000 | sed "s/$/.jpg/") ¥
+    | grep ">" ¥
+    | cut -c3-
+    ```
+- 予期せぬ特殊文字（空白や改行などを区切り文字と判断してしまう）を保護するために
+  - `find . -type f -name ¥*.py -print0 | xargs -0 wc -l`
+- 「Argument list too longg」というエラーが出る書き方と出ない書き方
+  - `ls | grep "¥.txt$" | xargs rm`
+  - `find . -maxdepth 1 -name ¥*.txt -type f -print0 | xargs -0 rm`
+- バックグラウンドでコマンドを起動する
+  - `wc -c my_extreemly_huge_file.txt &`
 
 # コマンドを調べる際
 - `man [調べたいコマンド]`
@@ -44,6 +69,12 @@
   - `history | grep -w [特定文字]`
 - コマンド履歴の削除
   - `history -c`
+
+# xargsコマンド
+- 入力文字列とコマンドテンプレートを組み合わせて、新しい完全なコマンドを生成し、実行する
+  - `ls -l | xargs wc -l`
+- 生成コマンドの中のどこに入力文字列が挿入されるか制御する
+  - `ls | xargs -I XYZ echo XYZ is my favorite food`
 
 # ログのERROR調査
 - `journalctl --no-pager | grep -i ERROR`
