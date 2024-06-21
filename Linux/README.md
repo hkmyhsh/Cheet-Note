@@ -195,7 +195,6 @@
 - 標準入力された単語を入れ替える
   - 'echo "linux efficient" | awk "{print $2 $1}"'
 
-
 # ファイルの中身表示
 - ファイルの**先頭10行**表示
   - `head num.txt`
