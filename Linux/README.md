@@ -22,6 +22,42 @@
 - 直前に作業していたディレクトリに移動する
   - `cd -`
 
+# 小ネタ
+- 最初のコマンドが**成功した時のみ**次のコマンドを実行したい
+  - `cd dir && touch new.txt`
+- 最初のコマンドが**失敗した時のみ**次のコマンドを実行したい
+  - `cd dir || mkdir dir`
+- すべてのコマンドが失敗した時のみエラーメッセージが出力したい
+  - `cd dir || mkdir dir && cd dir || echo "I failed"`
+- 最初のコマンドの**成功、失敗に関係なく**次のコマンドを実行したい
+  - `sleep7200; cp -a ~/important-files /mnt/backup_drive`
+- コマンド置換（$()内のコマンドを実行し結果を置き換える）
+  - `mv $(grep -l "Artist: Kansas" *.txt) kansas`
+- コマンド置換で変数に値を格納する（$()内のコマンドを実行し結果を置き換える）
+  - `kansasFiles=$(grep -l "Artist: Kansas" *.txt)`
+    - **[注意]出力結果が複数行になる可能性があるので変数使用時には引用符で囲むこと**
+      - `echo "$kansasFiles"`
+- **<(any command here)コマンドをサブシェル内で実行し、その出力結果があたかもファイルに含まれていたかのように**提示する
+  - ```
+    diff <(ls *.jpg | sort -n) <(seq 1 1000 | sed "s/$/.jpg/") ¥
+    | grep ">" ¥
+    | cut -c3-
+    ```
+- 予期せぬ特殊文字（空白や改行などを区切り文字と判断してしまう）を保護するために
+  - `find . -type f -name ¥*.py -print0 | xargs -0 wc -l`
+- 「Argument list too longg」というエラーが出る書き方と出ない書き方
+  - `ls | grep "¥.txt$" | xargs rm`
+  - `find . -maxdepth 1 -name ¥*.txt -type f -print0 | xargs -0 rm`
+- バックグラウンドでコマンドを起動する
+  - `wc -c my_extreemly_huge_file.txt &`
+  - 3つのコマンドをすべてバックグラウンドで実行
+    - `command1 & command2 & command3 &`
+  - echo以外の2つのコマンドをバックグラウンドで実行
+    - `command1 & command2 & echo hi`
+- バックグラウンドジョブを実行し、それをフォアグラウンドに移動する
+  - `sleep 20 &`
+  - `fg`
+
 # コマンドを調べる際
 - `man [調べたいコマンド]`
 - `info [調べたいコマンド]`
@@ -40,6 +76,12 @@
   - `history | grep -w [特定文字]`
 - コマンド履歴の削除
   - `history -c`
+
+# xargsコマンド
+- 入力文字列とコマンドテンプレートを組み合わせて、新しい完全なコマンドを生成し、実行する
+  - `ls -l | xargs wc -l`
+- 生成コマンドの中のどこに入力文字列が挿入されるか制御する
+  - `ls | xargs -I XYZ echo XYZ is my favorite food`
 
 # ログのERROR調査
 - `journalctl --no-pager | grep -i ERROR`
@@ -152,8 +194,10 @@
   - `echo $((($(date +%s -d 'yyyy/mm/dd')-$(date +%s))/(60*60*24)))`
 
 # 環境変数
-- 設定
-  - `export prof=~/prof.txt
+- ローカル変数設定
+  - `MY_VARIABLE=10`
+- 環境変数設定
+  - `export ANOTHER_VARIABLE=20
 - 既存のPATHに新たなディレクトリを追加
   - PATH="$PATH:「追加するPATH名」"
     - `PATH="$PATH:~/bin"`
@@ -162,9 +206,38 @@
 - 呼び出し
   - `$prof`
 - 一覧表示
-  - `printenv`
+  - `printenv | sort -i | less`
 - 個別表示
   - `printenv HOME`
+
+# awk および sedコマンド
+- ファイルの10行を表示して終了する（q）
+  - `sed 10q myfile`
+- 行番号が10以下の間だけ表示する
+  - `awk "FNR<=20" myfile`
+- 各行の最後の単語をそのまま表示する（指定されたアクションを実行する）
+  - `awk "{print $NF}" members`
+- アクションを持たない場合はデフォルトのアクション`{print}'を実行する
+  - echo efficient linux | awk `/efficient/`
+- 入力セパレーターをスペースからタブ（¥t）に変更して列を並び替える
+  - `awk -F"¥t" "{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
+  - 特定の文字列で始まる行だけを処理する（例: horse）
+    - `awk -F"¥t" "/^horse/{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
+  - 特定のカラムが特定の文字列で始まる行だけを処理する
+    - `awk -F"¥t" "$3/^201/{print $4, '(' $3 ').', '¥"' $2 '¥"'}"` animals.txt
+
+# テキストの変換
+- 文字を別の文字に変換する（例: コロンを改行する）
+  - `echo $PATH | tr : "¥n"`
+- 特定の文字セットを別の文字セットに変換する（例: アルファベットを大文字 → 小文字）
+  - `echo Efficient | tr A-Z a-z`
+    - `efficient`
+- 特定文字を削除する（例: 空白文字の削除）
+  - `echo efficient linux | tr -d " ¥t"`
+- 文字列の置換（例: .jpgを.pngに置き換える）
+  - `echo image.jpg | sed"s/¥.jpg/¥.png/"`
+- 標準入力された単語を入れ替える
+  - 'echo "linux efficient" | awk "{print $2 $1}"'
 
 # ファイルの中身表示
 - ファイルの**先頭10行**表示
@@ -197,6 +270,11 @@
   - `grep cat animals.txt`
   - 大文字小文字区別なく検索
     - `grep -i cat animals.txt`
+- ファイルを横結合する
+  - `paste -d, num.txt animals.txt`
+  - `paste -d "¥n" num.txt animals.txt`
+- 各ファイルの結合した行を生成する
+  - `paste -d, -s num.txt animals.txt`
 
 # ファイル一覧表示 / 検索
 - ファイルのみ表示する
@@ -378,6 +456,14 @@
   - 'md5sum *.jpg | cut -c1-32 | sort | uniq -c | sort -nr'
 - 重複しているファイルのチェックサムのみを表示する
   - 'md5sum *.jpg | cut -c1-32 | sort | uniq -c | sort -nr | grep -v "      1 "'
+  - **これをawkで簡略化する**
+    - ```
+      md5sum *.jpg ¥
+      | awk `{counts[$1]++; names[$1]=names[$1] " " $2} ¥
+             END {for (key in counts) print counts[key] " " key ":" names[key]}` ¥
+      | grep -v "^1 " ¥
+      | sort -nr
+      ```
 - 特定のチェックサムのファイルを表示
   - `m5sum *.jpg | grep [チェックサム番号] | cut -c35-`
 
