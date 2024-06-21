@@ -50,6 +50,13 @@
   - `find . -maxdepth 1 -name ¥*.txt -type f -print0 | xargs -0 rm`
 - バックグラウンドでコマンドを起動する
   - `wc -c my_extreemly_huge_file.txt &`
+  - 3つのコマンドをすべてバックグラウンドで実行
+    - `command1 & command2 & command3 &`
+  - echo以外の2つのコマンドをバックグラウンドで実行
+    - `command1 & command2 & echo hi`
+- バックグラウンドジョブを実行し、それをフォアグラウンドに移動する
+  - `sleep 20 &`
+  - `fg`
 
 # コマンドを調べる際
 - `man [調べたいコマンド]`
