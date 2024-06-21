@@ -152,8 +152,10 @@
   - `echo $((($(date +%s -d 'yyyy/mm/dd')-$(date +%s))/(60*60*24)))`
 
 # 環境変数
-- 設定
-  - `export prof=~/prof.txt
+- ローカル変数設定
+  - `MY_VARIABLE=10`
+- 環境変数設定
+  - `export ANOTHER_VARIABLE=20
 - 既存のPATHに新たなディレクトリを追加
   - PATH="$PATH:「追加するPATH名」"
     - `PATH="$PATH:~/bin"`
@@ -162,7 +164,7 @@
 - 呼び出し
   - `$prof`
 - 一覧表示
-  - `printenv`
+  - `printenv | sort -i | less`
 - 個別表示
   - `printenv HOME`
 
