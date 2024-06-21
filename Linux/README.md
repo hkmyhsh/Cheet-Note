@@ -166,9 +166,24 @@
 - 個別表示
   - `printenv HOME`
 
+# awk および sedコマンド
+- ファイルの10行を表示して終了する（q）
+  - `sed 10q myfile`
+- 行番号が10以下の間だけ表示する
+  - `awk "FNR<=20" myfile`
+
 # テキストの変換
 - 文字を別の文字に変換する（例: コロンを改行する）
   - `echo $PATH | tr : "¥n"`
+- 特定の文字セットを別の文字セットに変換する（例: アルファベットを大文字 → 小文字）
+  - `echo Efficient | tr A-Z a-z`
+    - `efficient`
+- 特定文字を削除する（例: 空白文字の削除）
+  - `echo efficient linux | tr -d " ¥t"`
+- 文字列の置換（例: .jpgを.pngに置き換える）
+  - `echo image.jpg | sed"s/¥.jpg/¥.png/"`
+- 標準入力された単語を入れ替える
+  - 'echo "linux efficient" | awk "{print $2 $1}"'
 
 # ファイルの中身表示
 - ファイルの**先頭10行**表示
