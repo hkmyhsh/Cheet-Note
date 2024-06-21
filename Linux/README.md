@@ -166,6 +166,10 @@
 - 個別表示
   - `printenv HOME`
 
+# テキストの変換
+- 文字を別の文字に変換する（例: コロンを改行する）
+  - `echo $PATH | tr : "¥n"`
+
 # ファイルの中身表示
 - ファイルの**先頭10行**表示
   - `head num.txt`
@@ -197,6 +201,11 @@
   - `grep cat animals.txt`
   - 大文字小文字区別なく検索
     - `grep -i cat animals.txt`
+- ファイルを横結合する
+  - `paste -d, num.txt animals.txt`
+  - `paste -d "¥n" num.txt animals.txt`
+- 各ファイルの結合した行を生成する
+  - `paste -d, -s num.txt animals.txt`
 
 # ファイル一覧表示 / 検索
 - ファイルのみ表示する
