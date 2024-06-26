@@ -8,6 +8,9 @@
     ```
 - Github Actions の permissions 設定
   - ```
+    GITHUB_TOKENの権限をデフォルトから変更したい場合、permissionsでワークフロー、ジョブ単位で権限を指定する。contentsなど、それぞれのスコープに対してread、write、noneの3種類の許可を与えられている。
+    ```
+  - ```
     permissions:
        contents: read
     packages: write
