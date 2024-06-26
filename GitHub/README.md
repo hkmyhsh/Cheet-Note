@@ -13,6 +13,25 @@
     packages: write
     ``` 
 
+# ワークフローをトリガーしたイベントやリポジトリの取得
+- ワークフローが実行された
+  - プルリクエストのブランチ名
+    - `${{ github.head_ref }}`
+  - プルリクエストの番号
+    - `${{ github.event.pull_request.number }}`
+  - プルリクエストの作成者
+    - `${{ github.event.pull_request.user.login }}`
+  - ステップのステータス表示
+    - `${{ steps.[ステップのID].conclusion }}`
+  - Organization に登録した変数の参照
+    - `${{ vars.SOME_VALUE }}`
+  - Organization に登録した変数の参照
+    - `${{ secrets.SECRET_TOKEN }}`
+
+# ジョブフロー制御
+- ジョブが失敗しても後続のジョブを実行したい
+  - `if: ${{ always() }}'
+
 # docker 関連で使いそうなコマンド
 - Container registry の認証
   - `- run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin`
