@@ -16,6 +16,64 @@
     packages: write
     ``` 
 
+# 手動実行ワークフロー
+- ```
+  name: Manual
+  on:
+    workflow_dispatch:                       # 手動実行イベント
+      inputs:
+        greeting:                            # 入力パラメータ名
+          type: string                       # データ型（文字列）
+          default: Hello                     # 入力パラメータのデフォルト値
+          required: true                     # 入力パラメータの必須フラグ
+          description: A cheerful word       # 入力パラメータの概要
+  jobs:
+    run:
+      runs-on: ubuntu-latest
+      steps:
+        - run: echo "${{ inputs.greeting }}" # 入力パラメータ「greeting」の参照
+  ```
+  - choice 型による**列挙値**の指定
+    - ```
+      inputs:
+        log-level:
+          type: choice # 入力パラメータを特定の値に制限
+          options:     # 受け付ける入力値を列挙
+            - info
+            - warn
+            - error
+      ```
+
+# github コンテキストでよく使うプロパティ
+- ワークフローの実行ID
+  - `github.run_id`
+- プルリクエストのソースブランチ
+  - `github.head_ref`
+- ステップのワーキングディレクトリ
+  - `github.workspace`
+- リポジトリ明確に（octcat/hello-world のような値）
+  - `github.repository`
+- リポジトリのオーナー名（octcat のような値）
+  - `github.repository_owner`
+- トリガーになったイベント（オブジェクト）
+  - `github.event`
+- プルリクエストのイベントタイトル
+  - `github.event.pull_request.title`
+    - 実際の書き方例
+      - `${{ github.event.pull_request.title }}`
+- ランナー名
+  - `runner.name`
+- OS（Linux / Windows / macOS）
+  - `runner.os`
+- CPUアーキテクチャ
+  - `runner.arch`
+- 一時ディレクトリのパス
+  - `runner.temp`
+- インストール済みツールのディレクトリパス
+  - `runner.tool_cache`
+- デバッグログが有効な場合のみ「1」をセット
+  - `runner.debug`
+
 # ワークフローをトリガーしたイベントやリポジトリの取得
 - ワークフローが実行された
   - プルリクエストのブランチ名
@@ -31,9 +89,60 @@
   - Organization に登録した変数の参照
     - `${{ secrets.SECRET_TOKEN }}`
 
+# 環境変数の定義と参照
+- 環境変数の定義
+  - ```
+    env:           # 環境変数の定義
+      BRANCH: main # 「BRANCH」という名前の環境変数へ、「main」という値をセット
+    ```
+- 環境変数の参照
+  - ```
+    name: Environment variables
+    on: push
+    jobs:
+      run:
+        runs-on: ubuntu-latest
+        env:
+          BRANCH: main                # ジョブレベルで環境変数を定義
+        steps:
+          - run: echo "${BRANCH}"     # シェルコマンドからジョブレベルの環境変数を参照
+          - uses: actions/checkout@v4
+            with:
+              ref: ${{ env.BRANCH }}  # envコンテキスト経由でジョブレベルの環境変数を参照
+    ```
+- 環境変数のオーバーライド
+  - ```
+    name: Override environment variables
+    on: push
+    env:
+      EXAMPLE: Defined by workflow level     # ワークフローレベルで環境変数を定義
+    jobs:
+      print:
+        runs-on: ubuntu-latest
+        steps:
+          - run: echo "${EXAMPLE}"           # ワークフローレベルの環境変数を出力
+          - env:
+              EXAMPLE: Defined by step level # ステップレベルで環境変数をオーバーライド
+            run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
+    ```
+
 # ジョブフロー制御
-- ジョブが失敗しても後続のジョブを実行したい
-  - `if: ${{ always() }}'
+- 特定条件でのみジョブを実行したい
+  - ```
+    steps:
+      - run: echo "Hello"
+        if: ${{ contains(github.run_id, '1') }} # ワークフロー実行IDで分岐
+    ```
+- 文字列比較結果で**trueの場合**ジョブを実行したい
+  - `if: ${{ github.actor == 'octocat' }} # octocatアカウント以外は実行をスキップ`
+- 手前のジョブが**成功したら**ジョブを実行したい
+  - `if: ${{ success() }}`
+- 手前のジョブが**失敗したら**ジョブを実行したい
+  - `if: ${{ failure() }}`
+- 手前のジョブが**キャンセルされたら**ジョブを実行したい
+  - `if: ${{ cancelled() }}`
+- 手前のジョブの**実行結果に関わらず**ジョブを実行したい
+  - `if: ${{ always() }}`
 
 # docker 関連で使いそうなコマンド
 - Container registry の認証
@@ -81,6 +190,33 @@
          service: ${{ secrets.ECS_SERVICE_NAME }}
          cluster: ${{ secrets.ECS_CLUSTER_NAME }}
     ```
+
+# 関数
+- 文字列系
+  - ```
+    - run: printenv | grep '_FUNC'
+        env:
+          CONTAINS_FUNC: ${{ contains('Hello', 'ell') }}     # 「ell」を含むか
+          STARTS_WITH_FUNC: ${{ startsWith('Hello', 'He') }} # 「He」で始まるか
+          ENDS_WITH_FUNC: ${{ endsWith('Hello', 'lo') }}     # 「lo」で終わるか
+          FORMAT_FUNC: ${{ format('{0}, {1}.', 'Hi', 'world') }} # フォーマット
+          JOIN_FUNC: ${{ join(github.event.*.html_url, ', ') }}  # カンマで結合
+    ```
+- JSON
+  - ```
+    steps:
+      - run: echo "${CONTEXT}"
+        env:
+          CONTEXT: ${{ toJSON(github) }} # githubコンテキストをJSON文字列でダンプ
+    ```
+- ハッシュ生成
+  - `hashFiles()`: 引数のパスから、ファイルのハッシュ値を生成する
+  - ```
+    - run: echo "${HASH}"
+        env:
+          HASH: ${{ hashFiles('.github/workflows/*.yml') }} # ハッシュ値の生成
+    ```
+
 
 # OIDCを用いてクラウドプロバイダーと接続する
 - GitHub Actions から利用したいクラウドプロバイダーがOIDCに対応している場合に利用可能
