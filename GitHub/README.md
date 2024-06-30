@@ -16,6 +16,17 @@
     packages: write
     ``` 
 
+# ステップ間のデータ共有
+- GITHUB_OUTPUT環境変数によるデータ共有
+  - ```
+    steps:
+      - id: source                                     # ステップIDを設定
+        run: echo "result=Hello" >> "${GITHUB_OUTPUT}" # GITHUB_OUTPUTへ書き出し
+      - env:
+        RESULT: ${{ steps.source.outputs.result }}   # stepsコンテキストから参照
+        run: echo "${RESULT}"
+    ```
+
 # 手動実行ワークフロー
 - ```
   name: Manual
