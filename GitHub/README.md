@@ -20,10 +20,10 @@
 - GITHUB_OUTPUT環境変数によるデータ共有
   - ```
     steps:
-      - id: source                                     # ステップIDを設定
-        run: echo "result=Hello" >> "${GITHUB_OUTPUT}" # GITHUB_OUTPUTへ書き出し
+      - id: <step-id>                                     # ステップIDを設定
+        run: echo "<key>=<value>" >> "${GITHUB_OUTPUT}" # GITHUB_OUTPUTへ書き出し
       - env:
-        RESULT: ${{ steps.source.outputs.result }}   # stepsコンテキストから参照
+        RESULT: ${{ steps.<step-id>.outputs.<key> }}   # stepsコンテキストから参照
         run: echo "${RESULT}"
     ```
 
