@@ -126,6 +126,32 @@
             run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
     ```
 
+# 関数
+- 文字列系
+  - ```
+    - run: printenv | grep '_FUNC'
+        env:
+          CONTAINS_FUNC: ${{ contains('Hello', 'ell') }}     # 「ell」を含むか
+          STARTS_WITH_FUNC: ${{ startsWith('Hello', 'He') }} # 「He」で始まるか
+          ENDS_WITH_FUNC: ${{ endsWith('Hello', 'lo') }}     # 「lo」で終わるか
+          FORMAT_FUNC: ${{ format('{0}, {1}.', 'Hi', 'world') }} # フォーマット
+          JOIN_FUNC: ${{ join(github.event.*.html_url, ', ') }}  # カンマで結合
+    ```
+- JSON
+  - ```
+    steps:
+      - run: echo "${CONTEXT}"
+        env:
+          CONTEXT: ${{ toJSON(github) }} # githubコンテキストをJSON文字列でダンプ
+    ```
+- ハッシュ生成
+  - `hashFiles()`: 引数のパスから、ファイルのハッシュ値を生成する
+  - ```
+    - run: echo "${HASH}"
+        env:
+          HASH: ${{ hashFiles('.github/workflows/*.yml') }} # ハッシュ値の生成
+    ```
+
 # ジョブフロー制御
 - 特定条件でのみジョブを実行したい
   - ```
@@ -190,33 +216,6 @@
          service: ${{ secrets.ECS_SERVICE_NAME }}
          cluster: ${{ secrets.ECS_CLUSTER_NAME }}
     ```
-
-# 関数
-- 文字列系
-  - ```
-    - run: printenv | grep '_FUNC'
-        env:
-          CONTAINS_FUNC: ${{ contains('Hello', 'ell') }}     # 「ell」を含むか
-          STARTS_WITH_FUNC: ${{ startsWith('Hello', 'He') }} # 「He」で始まるか
-          ENDS_WITH_FUNC: ${{ endsWith('Hello', 'lo') }}     # 「lo」で終わるか
-          FORMAT_FUNC: ${{ format('{0}, {1}.', 'Hi', 'world') }} # フォーマット
-          JOIN_FUNC: ${{ join(github.event.*.html_url, ', ') }}  # カンマで結合
-    ```
-- JSON
-  - ```
-    steps:
-      - run: echo "${CONTEXT}"
-        env:
-          CONTEXT: ${{ toJSON(github) }} # githubコンテキストをJSON文字列でダンプ
-    ```
-- ハッシュ生成
-  - `hashFiles()`: 引数のパスから、ファイルのハッシュ値を生成する
-  - ```
-    - run: echo "${HASH}"
-        env:
-          HASH: ${{ hashFiles('.github/workflows/*.yml') }} # ハッシュ値の生成
-    ```
-
 
 # OIDCを用いてクラウドプロバイダーと接続する
 - GitHub Actions から利用したいクラウドプロバイダーがOIDCに対応している場合に利用可能
