@@ -100,3 +100,56 @@
         - クラウドプロバイダーはリポジトリが `OWNER/REPO` であるか、かつmainブランチであるかを検証できる
 - **Subject claim** に何を指定するかと、最後にワークフローへ渡されるアクセストークンが扱える
 **クラウドプロバイダー内での権限の設定** が重要
+
+# ジョブにおけるコンテナの利用
+- ジョブコンテナ
+  - `runs-on` と同じ階層で `container` 以下に設定を記述する
+  - ```
+    jobs:
+      container-test-job:
+        runs-on: ubuntsu-latest
+        container:
+         image: golang:1.22.2
+        steps:
+          - run: (..略..)
+    ```
+- サービスコンテナ
+  - ランナーがジョブの開始時に立ち上げるコンテナ
+    - サービスコンテナはDBへのアクセスを必要とするようなテストを実施する際に便利
+  - ```
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        services:
+          postgres:
+            image: postgres
+            ports:
+              - 5432:5432
+            credentials:
+              username: ${{ secrets.registry_username }}
+              password: ${{ secrets.registry_password }}
+        steps:
+          run: (..略..)
+    ```
+
+# キャッシュの保存と復元
+- 例: トピックブランチではキャッシュを保存しないようにする
+```
+steps:
+   - uses: actions/checkout@v4
+   - uses: actions/cache/restore@v4
+     with:
+       path: |
+         ./path-to-cache
+       key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+       restore-keys: |
+         ${{ runner.os }}-${{ runner.arch }}-
+   - run: echo "Do something"
+   - uses: actions/cache/save@v4
+     if: github.ref == 'refs/heads/main'
+     with:
+       path: |
+         ./path-to-cache
+       key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+```
+
