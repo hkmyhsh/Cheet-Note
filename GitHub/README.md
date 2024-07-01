@@ -108,34 +108,39 @@
     ```
 - 環境変数の参照
   - ```
-    name: Environment variables
-    on: push
-    jobs:
-      run:
-        runs-on: ubuntu-latest
-        env:
-          BRANCH: main                # ジョブレベルで環境変数を定義
-        steps:
-          - run: echo "${BRANCH}"     # シェルコマンドからジョブレベルの環境変数を参照
-          - uses: actions/checkout@v4
-            with:
-              ref: ${{ env.BRANCH }}  # envコンテキスト経由でジョブレベルの環境変数を参照
+    steps:
+      - run: echo "${BRANCH}"     # シェルコマンドからジョブレベルの環境変数を参照
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}  # envコンテキスト経由でジョブレベルの環境変数を参照
     ```
 - 環境変数のオーバーライド
   - ```
-    name: Override environment variables
-    on: push
-    env:
-      EXAMPLE: Defined by workflow level     # ワークフローレベルで環境変数を定義
-    jobs:
-      print:
-        runs-on: ubuntu-latest
-        steps:
-          - run: echo "${EXAMPLE}"           # ワークフローレベルの環境変数を出力
-          - env:
-              EXAMPLE: Defined by step level # ステップレベルで環境変数をオーバーライド
-            run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
+    steps:
+      - run: echo "${EXAMPLE}"           # ワークフローレベルの環境変数を出力
+      - env:
+        EXAMPLE: Defined by step level # ステップレベルで環境変数をオーバーライド
+        run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
     ```
+- GITHUB_ENV 環境変数を利用
+  - ```
+    steps:
+      - run: echo "RESULT=hello" >> "${GITHUB_ENV}" # GITHUB_ENVへ書き出し
+      - run: echo "${RESULT}"                       # 通常の環境変数として参照
+    ```
+
+# GitHub API を実行するワークフロー
+- GItHub CLI を利用する
+- ```
+  permissions:           # GITHUB_TOKENの権限を指定
+    pull-requests: write # プルリクエストの書き込みを許可
+    contents: read       # ソースコードの読み込みを許可
+  steps:
+    - uses: actions/checkout@v4
+    - run: gh pr comment "${GITHUB_HEAD_REF}" --body "Hello, ${GITHUB_ACTOR}"
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub CLI用クレデンシャル
+  ```
 
 # 関数
 - 文字列系
