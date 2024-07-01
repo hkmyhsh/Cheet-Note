@@ -10,11 +10,32 @@
   - ```
     GITHUB_TOKENの権限をデフォルトから変更したい場合、permissionsでワークフロー、ジョブ単位で権限を指定する。contentsなど、それぞれのスコープに対してread、write、noneの3種類の許可を与えられている。
     ```
+  - **パーミッション記述時は、ソースコードの読み込みにも明示的な許可が必要**
+    - `contents: read`
   - ```
     permissions:
        contents: read
     packages: write
     ``` 
+- ワークフローのタイムアウト
+  - ```
+    defaults:
+      lint:
+        timeout-minutes: 5                            # タイムアウト
+    ```
+- デフォルトシェル
+  - パイプエラーを拾えるように、Bash起動オプションを変更
+  - ```
+    defaults:                                         # デフォルトシェル
+      run:
+        shell: bash
+    ```
+- コミット追加時に、古いワークフローの実行を自動キャンセルする
+  - ```
+    concurrency:                                      # 自動キャンセル
+      group: ${{ github.workflow }}-${{ github.ref }} # Concurrencyグループ
+      cancel-in-progress: true
+    ```
 
 # ステップ間のデータ共有
 - GITHUB_OUTPUT環境変数によるデータ共有
@@ -108,34 +129,39 @@
     ```
 - 環境変数の参照
   - ```
-    name: Environment variables
-    on: push
-    jobs:
-      run:
-        runs-on: ubuntu-latest
-        env:
-          BRANCH: main                # ジョブレベルで環境変数を定義
-        steps:
-          - run: echo "${BRANCH}"     # シェルコマンドからジョブレベルの環境変数を参照
-          - uses: actions/checkout@v4
-            with:
-              ref: ${{ env.BRANCH }}  # envコンテキスト経由でジョブレベルの環境変数を参照
+    steps:
+      - run: echo "${BRANCH}"     # シェルコマンドからジョブレベルの環境変数を参照
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}  # envコンテキスト経由でジョブレベルの環境変数を参照
     ```
 - 環境変数のオーバーライド
   - ```
-    name: Override environment variables
-    on: push
-    env:
-      EXAMPLE: Defined by workflow level     # ワークフローレベルで環境変数を定義
-    jobs:
-      print:
-        runs-on: ubuntu-latest
-        steps:
-          - run: echo "${EXAMPLE}"           # ワークフローレベルの環境変数を出力
-          - env:
-              EXAMPLE: Defined by step level # ステップレベルで環境変数をオーバーライド
-            run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
+    steps:
+      - run: echo "${EXAMPLE}"           # ワークフローレベルの環境変数を出力
+      - env:
+        EXAMPLE: Defined by step level # ステップレベルで環境変数をオーバーライド
+        run: echo "${EXAMPLE}"           # オーバーライドされた環境変数を出力
     ```
+- GITHUB_ENV 環境変数を利用
+  - ```
+    steps:
+      - run: echo "RESULT=hello" >> "${GITHUB_ENV}" # GITHUB_ENVへ書き出し
+      - run: echo "${RESULT}"                       # 通常の環境変数として参照
+    ```
+
+# GitHub API を実行するワークフロー
+- GItHub CLI を利用する
+- ```
+  permissions:           # GITHUB_TOKENの権限を指定
+    pull-requests: write # プルリクエストの書き込みを許可
+    contents: read       # ソースコードの読み込みを許可
+  steps:
+    - uses: actions/checkout@v4
+    - run: gh pr comment "${GITHUB_HEAD_REF}" --body "Hello, ${GITHUB_ACTOR}"
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub CLI用クレデンシャル
+  ```
 
 # 関数
 - 文字列系
@@ -299,3 +325,8 @@ steps:
        key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
 ```
 
+# 静的解析ワークフロー例
+- ```
+  - run: |                                    # 静的解析の実行
+          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:latest
+  ```
