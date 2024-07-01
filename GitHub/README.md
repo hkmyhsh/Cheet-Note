@@ -17,6 +17,25 @@
        contents: read
     packages: write
     ``` 
+- ワークフローのタイムアウト
+  - ```
+    defaults:
+      lint:
+        timeout-minutes: 5                            # タイムアウト
+    ```
+- デフォルトシェル
+  - パイプエラーを拾えるように、Bash起動オプションを変更
+  - ```
+    defaults:                                         # デフォルトシェル
+      run:
+        shell: bash
+  ```
+- コミット追加時に、古いワークフローの実行を自動キャンセルする
+  - ```
+    concurrency:                                      # 自動キャンセル
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+  ```
 
 # ステップ間のデータ共有
 - GITHUB_OUTPUT環境変数によるデータ共有
@@ -306,3 +325,8 @@ steps:
        key: ${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
 ```
 
+# 静的解析ワークフロー例
+- ```
+  - run: |                                    # 静的解析の実行
+          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:latest
+  ```
