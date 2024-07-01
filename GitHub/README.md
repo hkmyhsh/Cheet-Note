@@ -10,6 +10,8 @@
   - ```
     GITHUB_TOKENの権限をデフォルトから変更したい場合、permissionsでワークフロー、ジョブ単位で権限を指定する。contentsなど、それぞれのスコープに対してread、write、noneの3種類の許可を与えられている。
     ```
+  - **パーミッション記述時は、ソースコードの読み込みにも明示的な許可が必要**
+    - `contents: read`
   - ```
     permissions:
        contents: read
