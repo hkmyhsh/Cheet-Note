@@ -33,7 +33,7 @@
 - コミット追加時に、古いワークフローの実行を自動キャンセルする
   - ```
     concurrency:                                      # 自動キャンセル
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }} # Concurrencyグループ
       cancel-in-progress: true
     ```
 
