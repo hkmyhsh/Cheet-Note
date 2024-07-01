@@ -29,13 +29,13 @@
     defaults:                                         # デフォルトシェル
       run:
         shell: bash
-  ```
+    ```
 - コミット追加時に、古いワークフローの実行を自動キャンセルする
   - ```
     concurrency:                                      # 自動キャンセル
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-  ```
+    ```
 
 # ステップ間のデータ共有
 - GITHUB_OUTPUT環境変数によるデータ共有
