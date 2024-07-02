@@ -171,6 +171,34 @@
       - run: echo "${RESULT}"                       # 通常の環境変数として参照
     ```
 
+# Environments のデータ参照
+- `settings` で `Environment viriables' と 'Environment secrets' の登録は別で必要
+- Environments は `environment` キーを使ってジョブレベルで指定する
+  - `environment: <environment-name>`
+- Environments の利用例
+  - ```
+    name: Environments
+    on:
+      workflow_dispatch:
+        inputs:
+          environment-name:
+            type: environment             # 入力パラメータでEnvironmentsを切り替え
+            default: test
+            required: false
+            description: Environment name
+    jobs:
+      print:
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.environment-name }} # 利用するEnvironmentsを指定
+        env:
+          USERNAME: ${{ vars.USERNAME }}            # Environment variablesの参照
+          PASSWORD: ${{ secrets.PASSWORD }}         # Environment secretsの参照
+        steps:
+          - run: echo "${USERNAME}"
+          - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
+    ```
+  
+
 # GitHub API を実行するワークフロー
 - GItHub CLI を利用する
 - ```
