@@ -207,6 +207,46 @@
 - 手前のジョブの**実行結果に関わらず**ジョブを実行したい
   - `if: ${{ always() }}`
 
+# ジョブの並列実行と逐次実行
+- **並列**実行
+  - ```
+    jobs: # jobsキーへ複数のジョブを定義すれば、並列に実行される
+      first:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "First job"
+      second:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "Second job"
+      third:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "Third job"
+    ```
+- **逐次**実行
+  - `needs` キーがポイント
+  - ```
+    jobs:
+      first:                   # 依存ジョブがないので最初に実行される
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "First job"
+      second:                  # firstジョブのあとに実行される
+        runs-on: ubuntu-latest
+        needs: [first]         # needsキーへ依存するfirstジョブのIDを指定
+        steps:
+          - run: sleep 10 && echo "Second job"
+      third:                   # secondジョブのあとに実行される
+        runs-on: ubuntu-latest
+        needs: [second]        # needsキーへ依存するsecondジョブのIDを指定
+        steps:
+          - run: sleep 10 && echo "Third job"
+    ```
+  - 複数ジョブへの依存定義も可能
+    - `needs: [<job-id-1>, <job-id-2>, ...]`
+
+
 # docker 関連で使いそうなコマンド
 - Container registry の認証
   - `- run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin`
@@ -398,3 +438,8 @@ steps:
           echo "- first line" >> "${GITHUB_STEP_SUMMARY}"
           echo "- second line" >> "${GITHUB_STEP_SUMMARY}"
       ```
+
+
+
+
+
