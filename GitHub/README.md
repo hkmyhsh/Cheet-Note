@@ -48,6 +48,27 @@
         run: echo "${RESULT}"
     ```
 
+# ジョブ間のデータ共有
+- 環境変数 `outputs` キーを利用
+- `needs: [before]` でジョブの逐次実行を制御
+  - ```
+    jobs:
+      before:
+        runs-on: ubuntu-latest
+        steps:
+          - id: generate                                   # ステップのID
+            run: echo "result=Hello" >> "${GITHUB_OUTPUT}" # ステップレベルの出力値
+        outputs:
+          result: ${{ steps.generate.outputs.result }}     # ジョブレベルの出力値
+      after:
+        runs-on: ubuntu-latest
+          needs: [before]                                    # 依存するジョブIDの指定
+          steps:
+          - env:
+            RESULT: ${{ needs.before.outputs.result }}   # 依存ジョブの出力値を参照
+            run: echo "${RESULT}"
+    ```
+
 # 手動実行ワークフロー
 - ```
   name: Manual
