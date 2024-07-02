@@ -373,3 +373,28 @@ steps:
           - run: echo "::add-mask::${PASSWORD}" # ログ出力時にマスク
           - run: echo "${PASSWORD}"
         ```
+
+# ジョブのレポーティングについて
+- ワークフローコマンドを利用する
+- アノテーション（**シンプルなメッセージの出力向き**）
+  - ジョブページにアノテーションが表示される
+  - ```
+    ::error::<message>
+    ::warning::<message>
+    ::notice::<message>
+    ```
+    - 利用例
+      - ```
+        - run: echo "::error::This is an error"    # Errorレベルのアノテーション
+        - run: echo "::warning::This is a warning" # Warningレベルのアノテーション
+        - run: echo "::notice::This is a notice"   # Noticeレベルのアノテーション
+        ```
+- ジョブサマリー（**テーブルやリストなどで出力したい場合**）
+  - 例) マークダウン形式での出力
+    - ```
+      steps:
+      - run: | # マークダウンテキストをジョブサマリーへ出力
+          echo "## Example Title :rocket:" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- first line" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- second line" >> "${GITHUB_STEP_SUMMARY}"
+      ```
