@@ -460,7 +460,53 @@ steps:
           echo "- second line" >> "${GITHUB_STEP_SUMMARY}"
       ```
 
-
-
-
+# マトリックス
+- 1つのジョブ定義で、複数のジョブを実行できる
+  - `複数のOSでビルドしたい`場合などに効果的
+- マトリックスは `matrix` キーで定義する
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                                             # マトリックスの定義
+            os: [ubuntu-latest, windows-latest, macos-latest] # osプロパティの定義
+        runs-on: ${{ matrix.os }}                             # osプロパティの参照
+        steps:
+          - run: echo "${RUNNER_OS}"
+            shell: bash
+    ```
+- **多次元マトリックス**
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                                 # 多次元マトリックスの定義
+            os: [ubuntu-latest, macos-latest]     # osプロパティの定義
+            version: [18, 20]                     # versionプロパティの定義
+        runs-on: ${{ matrix.os }}                 # osプロパティの参照
+        steps:
+          - uses: actions/setup-node@v4
+            with:
+            node-version: ${{ matrix.version }} # versionプロパティの参照
+          - run: echo "${RUNNER_OS}" && node --version
+    ```
+- **組み合わせ条件の手動定義**
+  - `include` キーを利用する
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                  # 多次元マトリックスの定義
+            include:               # 組み合わせ条件を手動で列挙
+              - os: ubuntu-latest  # パターン1
+                version: 20
+              - os: macos-latest   # パターン2
+                version: 18
+        runs-on: ${{ matrix.os }}
+        steps:
+          - uses: actions/setup-node@v4
+            with:
+              node-version: ${{ matrix.version }}
+          - run: echo "${RUNNER_OS}" && node --version
+    ```
 
