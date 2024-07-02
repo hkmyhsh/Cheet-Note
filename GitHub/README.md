@@ -330,3 +330,46 @@ steps:
   - run: |                                    # 静的解析の実行
           docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:latest
   ```
+
+# ワークフローコマンド
+- `echo` コマンド経由でランナーへ特殊な操作を指示できる
+  - `::workflow-command parameter1=<data1>,parameter2=<data2>::<command value>`
+
+# ログの出力
+- デバッグログの出力（Enable debug logging が必要）
+  - ```
+    - run: echo "::debug::This is a debug log" # デバッグログ有効化時にのみ出力
+    ```
+- Bash のトレーシングオプション（**どんなコマンドを実行したか** / **その結果はどうなったか**）
+  - `set -x` により有効化
+  - 利用例
+    - ```
+      - run: |   # Bashのトレーシングオプションを有効化し、実行したコマンドをログ出力
+          set -x
+          date
+          hostname
+      ```
+- ログのグループ化（実行結果画面で**ログが折り畳まれた状態**になる）
+  - ワークフローコマンドによりログをグループ化可能
+    - ```
+      ::group::<group-name>
+      ::endgroup::
+      ```
+    - ログのグループ化利用例
+      - ```
+        steps:
+          - run: |
+            echo "::group::Show environment variables" # ロググループ化の開始
+            printenv
+            echo "::endgroup::"                        # ロググループ化の終了
+        ```
+- ログの手動マスク（**クレデンシャルを動的に生成するケースで使われる**）
+  - Secrets へ登録した値は、ログ出力時に自動でマスクされる
+  - これと同じように**任意の値に対してマスクを実現する方法**
+    - `::add-mask::<secret-value>`
+    - 値のマスク例（PASSWORD環境変数の値が「***」へマスク）
+      - ```
+        steps:
+          - run: echo "::add-mask::${PASSWORD}" # ログ出力時にマスク
+          - run: echo "${PASSWORD}"
+        ```
