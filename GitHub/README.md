@@ -48,6 +48,27 @@
         run: echo "${RESULT}"
     ```
 
+# ジョブ間のデータ共有
+- 環境変数 `outputs` キーを利用
+- `needs: [before]` でジョブの逐次実行を制御
+  - ```
+    jobs:
+      before:
+        runs-on: ubuntu-latest
+        steps:
+          - id: generate                                   # ステップのID
+            run: echo "result=Hello" >> "${GITHUB_OUTPUT}" # ステップレベルの出力値
+        outputs:
+          result: ${{ steps.generate.outputs.result }}     # ジョブレベルの出力値
+      after:
+        runs-on: ubuntu-latest
+          needs: [before]                                    # 依存するジョブIDの指定
+          steps:
+          - env:
+            RESULT: ${{ needs.before.outputs.result }}   # 依存ジョブの出力値を参照
+            run: echo "${RESULT}"
+    ```
+
 # 手動実行ワークフロー
 - ```
   name: Manual
@@ -150,6 +171,34 @@
       - run: echo "${RESULT}"                       # 通常の環境変数として参照
     ```
 
+# Environments のデータ参照
+- `settings` で `Environment viriables' と 'Environment secrets' の登録は別で必要
+- Environments は `environment` キーを使ってジョブレベルで指定する
+  - `environment: <environment-name>`
+- Environments の利用例
+  - ```
+    name: Environments
+    on:
+      workflow_dispatch:
+        inputs:
+          environment-name:
+            type: environment             # 入力パラメータでEnvironmentsを切り替え
+            default: test
+            required: false
+            description: Environment name
+    jobs:
+      print:
+        runs-on: ubuntu-latest
+        environment: ${{ inputs.environment-name }} # 利用するEnvironmentsを指定
+        env:
+          USERNAME: ${{ vars.USERNAME }}            # Environment variablesの参照
+          PASSWORD: ${{ secrets.PASSWORD }}         # Environment secretsの参照
+        steps:
+          - run: echo "${USERNAME}"
+          - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
+    ```
+  
+
 # GitHub API を実行するワークフロー
 - GItHub CLI を利用する
 - ```
@@ -206,6 +255,46 @@
   - `if: ${{ cancelled() }}`
 - 手前のジョブの**実行結果に関わらず**ジョブを実行したい
   - `if: ${{ always() }}`
+
+# ジョブの並列実行と逐次実行
+- **並列**実行
+  - ```
+    jobs: # jobsキーへ複数のジョブを定義すれば、並列に実行される
+      first:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "First job"
+      second:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "Second job"
+      third:
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "Third job"
+    ```
+- **逐次**実行
+  - `needs` キーがポイント
+  - ```
+    jobs:
+      first:                   # 依存ジョブがないので最初に実行される
+        runs-on: ubuntu-latest
+        steps:
+          - run: sleep 10 && echo "First job"
+      second:                  # firstジョブのあとに実行される
+        runs-on: ubuntu-latest
+        needs: [first]         # needsキーへ依存するfirstジョブのIDを指定
+        steps:
+          - run: sleep 10 && echo "Second job"
+      third:                   # secondジョブのあとに実行される
+        runs-on: ubuntu-latest
+        needs: [second]        # needsキーへ依存するsecondジョブのIDを指定
+        steps:
+          - run: sleep 10 && echo "Third job"
+    ```
+  - 複数ジョブへの依存定義も可能
+    - `needs: [<job-id-1>, <job-id-2>, ...]`
+
 
 # docker 関連で使いそうなコマンド
 - Container registry の認証
@@ -330,3 +419,122 @@ steps:
   - run: |                                    # 静的解析の実行
           docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:latest
   ```
+
+# ワークフローコマンド
+- `echo` コマンド経由でランナーへ特殊な操作を指示できる
+  - `::workflow-command parameter1=<data1>,parameter2=<data2>::<command value>`
+
+# ログの出力
+- デバッグログの出力（Enable debug logging が必要）
+  - ```
+    - run: echo "::debug::This is a debug log" # デバッグログ有効化時にのみ出力
+    ```
+- Bash のトレーシングオプション（**どんなコマンドを実行したか** / **その結果はどうなったか**）
+  - `set -x` により有効化
+  - 利用例
+    - ```
+      - run: |   # Bashのトレーシングオプションを有効化し、実行したコマンドをログ出力
+          set -x
+          date
+          hostname
+      ```
+- ログのグループ化（実行結果画面で**ログが折り畳まれた状態**になる）
+  - ワークフローコマンドによりログをグループ化可能
+    - ```
+      ::group::<group-name>
+      ::endgroup::
+      ```
+    - ログのグループ化利用例
+      - ```
+        steps:
+          - run: |
+            echo "::group::Show environment variables" # ロググループ化の開始
+            printenv
+            echo "::endgroup::"                        # ロググループ化の終了
+        ```
+- ログの手動マスク（**クレデンシャルを動的に生成するケースで使われる**）
+  - Secrets へ登録した値は、ログ出力時に自動でマスクされる
+  - これと同じように**任意の値に対してマスクを実現する方法**
+    - `::add-mask::<secret-value>`
+    - 値のマスク例（PASSWORD環境変数の値が「***」へマスク）
+      - ```
+        steps:
+          - run: echo "::add-mask::${PASSWORD}" # ログ出力時にマスク
+          - run: echo "${PASSWORD}"
+        ```
+
+# ジョブのレポーティングについて
+- ワークフローコマンドを利用する
+- アノテーション（**シンプルなメッセージの出力向き**）
+  - ジョブページにアノテーションが表示される
+  - ```
+    ::error::<message>
+    ::warning::<message>
+    ::notice::<message>
+    ```
+    - 利用例
+      - ```
+        - run: echo "::error::This is an error"    # Errorレベルのアノテーション
+        - run: echo "::warning::This is a warning" # Warningレベルのアノテーション
+        - run: echo "::notice::This is a notice"   # Noticeレベルのアノテーション
+        ```
+- ジョブサマリー（**テーブルやリストなどで出力したい場合**）
+  - 例) マークダウン形式での出力
+    - ```
+      steps:
+      - run: | # マークダウンテキストをジョブサマリーへ出力
+          echo "## Example Title :rocket:" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- first line" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- second line" >> "${GITHUB_STEP_SUMMARY}"
+      ```
+
+# マトリックス
+- 1つのジョブ定義で、複数のジョブを実行できる
+  - `複数のOSでビルドしたい`場合などに効果的
+- マトリックスは `matrix` キーで定義する
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                                             # マトリックスの定義
+            os: [ubuntu-latest, windows-latest, macos-latest] # osプロパティの定義
+        runs-on: ${{ matrix.os }}                             # osプロパティの参照
+        steps:
+          - run: echo "${RUNNER_OS}"
+            shell: bash
+    ```
+- **多次元マトリックス**
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                                 # 多次元マトリックスの定義
+            os: [ubuntu-latest, macos-latest]     # osプロパティの定義
+            version: [18, 20]                     # versionプロパティの定義
+        runs-on: ${{ matrix.os }}                 # osプロパティの参照
+        steps:
+          - uses: actions/setup-node@v4
+            with:
+            node-version: ${{ matrix.version }} # versionプロパティの参照
+          - run: echo "${RUNNER_OS}" && node --version
+    ```
+- **組み合わせ条件の手動定義**
+  - `include` キーを利用する
+  - ```
+    jobs:
+      print:
+        strategy:
+          matrix:                  # 多次元マトリックスの定義
+            include:               # 組み合わせ条件を手動で列挙
+              - os: ubuntu-latest  # パターン1
+                version: 20
+              - os: macos-latest   # パターン2
+                version: 18
+        runs-on: ${{ matrix.os }}
+        steps:
+          - uses: actions/setup-node@v4
+            with:
+              node-version: ${{ matrix.version }}
+          - run: echo "${RUNNER_OS}" && node --version
+    ```
+
