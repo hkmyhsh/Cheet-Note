@@ -126,6 +126,8 @@
   - `runner.tool_cache`
 - デバッグログが有効な場合のみ「1」をセット
   - `runner.debug`
+- セッション名の設定例
+  - `SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}`
 
 # ワークフローをトリガーしたイベントやリポジトリの取得
 - ワークフローが実行された
