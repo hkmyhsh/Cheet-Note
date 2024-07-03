@@ -56,3 +56,28 @@
         ```
     - 対応内容
       - OpenID Connect Providerを作成する
+    - 対応内容
+      - ワークフローへパーミッション定義を追加する
+  - `Not authorized to perform sts:AssumeRoleWithWebIdentity`
+    - エラーメッセージからだけでは原因が特定できない
+    - エラーメッセージ
+      - ```
+        Error: Could not assume role with OIDC:
+        Not authorized to perform sts:AssumeRoleWithWebIdentity
+        ```
+    - 対応内容
+      - ワークフローで使用している値が間違っていないか確認
+        - Secret に登録した AWS アカウント ID や IAM ロール名 など
+      - Assume Role ポリシー の Condition 定義を確認する
+        - リポジトリの指定が間違っている
+        - 末尾の `:*` が抜けている
+      - 上記以外にもあるため、解決が困難なら、最初からやり直すのも手
+  - `An error occurred (AccessDenied)`
+    - 認証は成功したが、権限が足りない
+    - エラーメッセージ
+      - ```
+        An error occurred (AccessDenied) when calling the XXXX operation:User:
+        arn:aws:sts::***:assumed-role/***/gh-oidc-1234567890-1 is not authorized to ......
+        ```
+    - 対応内容
+      - AWS CloudTrailのログ や 出力されているエラーメッセージを検索する
