@@ -35,3 +35,29 @@
   - Terraform
 
 # Dependabot の設定ファイル
+- '.github/depemdabot.yml' にDependabot の設定を記載する
+- 記載例
+  - ```
+    version: 2
+    updates:
+      - package-ecosystem: github-actions # パッケージエコシステム
+        directory: /                      # パッケージマニフェストの配置先ディレクトリ
+        schedule:                         # バージョンアップスケジュール
+          interval: daily
+    ```
+    - version: 設定ファイル自体のバージョン
+    - updates: 依存関係のアップデート設定
+    - package-ecosystem: パッケージマネージャーやツールの識別子
+      - 例: `github-actions` を指定すると `Reusable Workflow` が自動バージョンアップされる
+    - directory: パッケージマニフェストの配置先ディレクトリを指定
+      - リポジトリの**ルートディレクトリ**が起点
+      - 例
+        - package.json
+        - Gemfile
+        - Dockerfile
+      - **ただし、GitHub Actions のみ固定で「/」と指定する**
+    - schedule: バージョンアップのスケジュール設定
+      - 例
+        - daily
+        - weekly
+        - monthly
