@@ -93,7 +93,13 @@
 - ユーザ の役割: プルリクエストをレビューして、マージすること
   - 依存関係が多いとプルリクエストが多くなり、日々の運用負荷が高まる
     - 自動マージするワークフローを実装（下記コマンドをワークフローに組み込む）
-      - `gh pr merge <NUMBER | URL | BRANCH> --merge`
+      - `gh pr merge <NUMBER | URL | BRANCH> --merge --auto`
+        - マージ方式はいくつかある
+          - `--merge`：マージコミットを作成してからマージ
+          - `--rebase`：コミットをRebaseしてからマージ
+          - `--squash`：すべてのコミットを単一コミットへまとめてからマージ
+        - `--auto` フラグ: **ステータスチェックがすべて成功状態**に変わったタイミングで自動的にマージしてくれる（全ワークフローの正常完了を持つ）
+          - 【注意】リポジトリの `Settings` で `Allow auto merge` にチェックを入れる
       - ```
         name: Auto merge
         on: pull_request
@@ -108,10 +114,20 @@
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub CLIのクレデンシャル
             steps:
               - uses: actions/checkout@v4
-              - run: gh pr merge "${GITHUB_HEAD_REF}" --merge # GitHub CLIでマージ
+              - run: gh pr merge "${GITHUB_HEAD_REF}" --merge --auto # GitHub CLIでマージ
         ```
     - **自動マージとブランチプロテクションルールの両立**
       - ワークフローの実行を **Dependabot** が作成したプルリクエストに制限する
         - `if: ${{ github.actor == 'dependabot[bot]' }}`
       - 対象のソースブランチ名 `${GITHUB_HEAD_REF}` を取得し、マージ対象のプルリクエストを識別する
         - `- run: gh pr merge "${GITHUB_HEAD_REF}" --merge`
+      - Dependabot以外が作成したプルリクエストは、承認必須 / Dependabotが作成したプルリクエストは承認を必須にしない
+        - GitHub CLI による承認
+          - `gh pr review <NUMBER | URL | BRANCH> --approve`
+            - ```
+              - run: |
+                gh pr review "${GITHUB_HEAD_REF}" --approve
+                gh pr merge "${GITHUB_HEAD_REF}" --merge --auto
+              ```
+        - GitHub Actions によるプルリクエストの作成と承認を許可
+          - 【注意】リポジトリの `Settings` で `Allow GitHub Actions to create and approve pull requests` にチェックを入れる
