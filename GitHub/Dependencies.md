@@ -44,6 +44,14 @@
         directory: /                      # パッケージマニフェストの配置先ディレクトリ
         schedule:                         # バージョンアップスケジュール
           interval: daily
+        ignore:                                      # バージョンアップの除外設定
+          - dependency-name: actions/upload-artifact # 除外する依存関係の名前
+            versions:                                # 除外対象のバージョン
+              - 4.3.0
+              - 4.3.1
+          - dependency-name: 'actions/*'             # アスタリスクは任意文字列にマッチ
+            update-types:                            # 除外するバージョンアップの種類
+              - version-update:semver-major
     ```
     - version: 設定ファイル自体のバージョン
     - updates: 依存関係のアップデート設定
@@ -61,3 +69,16 @@
         - daily
         - weekly
         - monthly
+    - ignore: バージョンアップの除外設定
+      - dependency-name：除外する依存関係の名前（* を使い0文字以上の任意の文字列を表現可能）
+      - versions：除外対象のバージョン
+      - update-types：除外するバージョンアップの種類
+        - version-update:semver-major：メジャーバージョン（X.Y.ZのX部分）
+        - version-update:semver-minor：マイナーバージョン（X.Y.ZのY部分）
+        - version-update:semver-patch：パッチバージョン（X.Y.ZのZ部分）
+
+# Dependabotコマンド
+- プルリクエスト上で `@dependabot<command>` のようなコメントを投稿すると Dependabot が操作出来る
+  - `@dependabot merge`: ステータスチェックがすべて成功ならマージする
+  - `@dependabot close`: プルリクエストをクローズする
+  - `@dependabot recreate`: プルリクエストを再作成する
