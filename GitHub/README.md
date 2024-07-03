@@ -255,6 +255,14 @@
   - `if: ${{ cancelled() }}`
 - 手前のジョブの**実行結果に関わらず**ジョブを実行したい
   - `if: ${{ always() }}`
+- **パッチバージョン変更**の場合のみ実行したい
+  - `if: ${{ steps.meta.outputs.update-type == 'version-update:semver-patch' }}`
+- **開発環境向け**の場合のみ実行したい
+  - ```
+    if: >-
+      ${{ steps.meta.outputs.dependency-type == 'direct:development' &&
+      steps.meta.outputs.update-type != 'version-update:semver-major' }}`
+    ```
 
 # ジョブの並列実行と逐次実行
 - **並列**実行
