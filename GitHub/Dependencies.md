@@ -82,3 +82,36 @@
   - `@dependabot merge`: ステータスチェックがすべて成功ならマージする
   - `@dependabot close`: プルリクエストをクローズする
   - `@dependabot recreate`: プルリクエストを再作成する
+
+# 【参考】ブランチプロテクションルールの3つのケース
+- ブランチプロテクションルールなし
+- ステータスチェックが必須（Require status checks to pass before merging）
+- 自分以外の承認が必須（Require approvals）
+
+# GitHub Actions による自動マージ
+- Dependabot の役割: `依存関係のバージョンアップを検知` して、`プルリクエストを出す` こと
+- ユーザ の役割: プルリクエストをレビューして、マージすること
+  - 依存関係が多いとプルリクエストが多くなり、日々の運用負荷が高まる
+    - 自動マージするワークフローを実装（下記コマンドをワークフローに組み込む）
+      - `gh pr merge <NUMBER | URL | BRANCH> --merge`
+      - ```
+        name: Auto merge
+        on: pull_request
+        jobs:
+          merge:
+            if: ${{ github.actor == 'dependabot[bot]' }} # Dependabotのプルリクエストのみ
+            runs-on: ubuntu-latest
+            permissions:                                 # マージに必要なパーミッション
+              contents: write
+              pull-requests: write
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub CLIのクレデンシャル
+            steps:
+              - uses: actions/checkout@v4
+              - run: gh pr merge "${GITHUB_HEAD_REF}" --merge # GitHub CLIでマージ
+        ```
+    - **自動マージとブランチプロテクションルールの両立**
+      - ワークフローの実行を **Dependabot** が作成したプルリクエストに制限する
+        - `if: ${{ github.actor == 'dependabot[bot]' }}`
+      - 対象のソースブランチ名 `${GITHUB_HEAD_REF}` を取得し、マージ対象のプルリクエストを識別する
+        - `- run: gh pr merge "${GITHUB_HEAD_REF}" --merge`
