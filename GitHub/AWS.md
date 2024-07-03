@@ -35,3 +35,24 @@
             - run: aws iam list-users                        # 一時クレデンシャルの利用
             - run: aws iam create-user --user-name invalid || true
       ```
+
+- AWS 連携のトラブルシューティングの例
+  - `Credentials could not be loaded`
+    - 事象
+      - `id-token` スコープの書き込み権限がない
+    - エラーメッセージ
+      - ```
+        Error: Credentials could not be loaded, please check your action inputs:
+        Could not load credentials from any providers
+        ```
+    - 対応内容
+      - ワークフローへパーミッション定義を追加する
+  - `No OpenIDConnect provider found in your account`
+    - `OpenID Connect Provider` が存在しない
+    - エラーメッセージ
+      - ```
+        Error: Could not assume role with OIDC:
+        No OpenIDConnect provider found in your account for ......
+        ```
+    - 対応内容
+      - OpenID Connect Providerを作成する
