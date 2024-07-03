@@ -131,3 +131,19 @@
               ```
         - GitHub Actions によるプルリクエストの作成と承認を許可
           - 【注意】リポジトリの `Settings` で `Allow GitHub Actions to create and approve pull requests` にチェックを入れる
+
+# Dependabotが起動したワークフロと通常のワークフローの差分
+- 通常のSecretsは参照できず、**Dependabot専用のSecrets**を参照する
+  - 【注意】リポジトリの `Settings` で `Dependabot secrets` を登録する
+- バージョンアップする**依存関係のメタデータ**を取得できる
+  - `dependabot/fetch-metadata` アクションで依存関係のメタデータを取得できる
+    - よく使うメタデータ
+      - update-type：バージョンアップの種類
+      - dependency-type：依存関係の種類
+      - package-ecosystem：パッケージエコシステム
+    - 使い方例
+      - ```
+        - id: meta
+          uses: dependabot/fetch-metadata@v2
+        - if: ${{ steps.meta.outputs.update-type == 'version-update:semver-patch' }}
+        ```
