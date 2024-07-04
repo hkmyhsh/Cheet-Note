@@ -9,6 +9,12 @@
   - Git設定ファイル: ボットアカウントで Git を操作出来るよう設定する
   - リポジトリ操作: 変更したファイルをすべてコミットしてプッシュする
   - プルリクエスト作成: GitHub CLI でプルリクエストを作成する
+- 【注意】**ボットアカウント**
+  - `github-actions[bot]`: 実在するのボットアカウント
+  - ```
+    USERNAME: github-actions[bot]
+    EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+    ```
 ```
 name: Create PR
 description: |
@@ -44,9 +50,4 @@ runs:
         git push origin "${BRANCH}"                   # プルリクエストの作成（↓）
         gh pr create --head "${BRANCH}" --title "${MESSAGE}" --body "${MESSAGE}"
 ```
-- **ボットアカウント**
-  - `github-actions[bot]`: 実在するのボットアカウント
-  - ```
-    USERNAME: github-actions[bot]
-    EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-    ```
+- 
