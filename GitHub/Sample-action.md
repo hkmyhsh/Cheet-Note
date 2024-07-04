@@ -84,7 +84,7 @@ jobs:
       - name: Verify        # 実行結果の検証
         run: |
           set -x
-          test "$(gh pr view "${BRANCH}" --json title --jq .title)" = "Test"
+            test "$(gh pr view "${BRANCH}" --json title --jq .title)" = "Test"
         env:
           BRANCH: ${{ steps.exercise.outputs.branch }}
       - name: Teardown      # テストの後始末
