@@ -1,4 +1,22 @@
 # Reusable Workflow
+- パーミッション
+  - 定義をスキップすることも可能
+    - その場合は呼び出し側ワークフローのパーミッションを暗黙的に継承する
+    - 利用者の認知負荷が上がるため**省略は非推奨**
+- GIRHUB_TOKEN のパーミッション
+  - **呼び出し側ワークフローに制約される**
+- `github.event` プロパティ
+  - 呼び出し側のワークフローがどのイベントで起動されているか制御できないため、**`github.event` プロパティで意図した値が取れる保証がない**
+-Secrets
+  - **呼び出し側ワークフローの `Secrets`** を直接参照できない
+    - 例外: `GITHUB_TOKEN`
+    - `inherit` キーワードを使うと、呼び出し側の `Secrets` を Reusable Workflow がまとめて継承できる
+      - ```
+        uses: ./.github/workflows/reusable-inherit.yml
+        secrets: inherit # Secretsをまとめて継承できる
+        ```
+  - **Ruesable Workflows の環境変数**
+    - デフォルト環境変数を除き、呼び出し側ワークフローの環境変数は Reusable Workflow から参照できない
 - Reusable Workflowsを起動するイベント
   - `workflow_call` を指定するとReusable Workflowsとして自動的に認識される。
   - ```
