@@ -1,4 +1,22 @@
 # Reusable Workflow
+- パーミッション
+  - 定義をスキップすることも可能
+    - その場合は呼び出し側ワークフローのパーミッションを暗黙的に継承する
+    - 利用者の認知負荷が上がるため**省略は非推奨**
+- GIRHUB_TOKEN のパーミッション
+  - **呼び出し側ワークフローに制約される**
+- `github.event` プロパティ
+  - 呼び出し側のワークフローがどのイベントで起動されているか制御できないため、**`github.event` プロパティで意図した値が取れる保証がない**
+-Secrets
+  - **呼び出し側ワークフローの `Secrets`** を直接参照できない
+    - 例外: `GITHUB_TOKEN`
+    - `inherit` キーワードを使うと、呼び出し側の `Secrets` を Reusable Workflow がまとめて継承できる
+      - ```
+        uses: ./.github/workflows/reusable-inherit.yml
+        secrets: inherit # Secretsをまとめて継承できる
+        ```
+  - **Ruesable Workflows の環境変数**
+    - デフォルト環境変数を除き、呼び出し側ワークフローの環境変数は Reusable Workflow から参照できない
 - Reusable Workflowsを起動するイベント
   - `workflow_call` を指定するとReusable Workflowsとして自動的に認識される。
   - ```
@@ -47,7 +65,7 @@
             description: メッセージ                         # 出力値の概要
         ```
 
-# Reusable Workflowsのジョブ定義
+# Reusable Workflows のジョブ定義
 - 定義
   - 下記のような項目を通常通り定義可能
     - ランナー
@@ -93,4 +111,28 @@
               GITHUB_TOKEN: ${{ secrets.token }}
         outputs:
           pr-comment: ${{ steps.pr-comment.outputs.body }}
+    ```
+
+# Reusable Workflows 呼び出しワークフロー
+- 記載例
+  - ```
+    name: Call
+    on: pull_request
+    jobs:
+      call:
+        uses: ./.github/workflows/reusable-workflows.yml # Reusable Workflowsの指定
+        with:                                            # 平文の入力パラメータ指定
+          pr-number: ${{ github.event.pull_request.number }}
+        secrets:                                         # Secretsの入力パラメータ指定
+          token: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          contents: read
+          pull-requests: write
+      print:
+        needs: [call]
+        runs-on: ubuntu-latest
+        steps:
+          - run: echo "Result> ${MESSAGE}"
+            env:
+              MESSAGE: ${{ needs.call.outputs.message }} # 出力値の参照
     ```

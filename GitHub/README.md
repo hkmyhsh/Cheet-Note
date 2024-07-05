@@ -199,7 +199,6 @@
           - run: echo "${USERNAME}"
           - run: echo "${PASSWORD:0:1} ${PASSWORD#?}"
     ```
-  
 
 # GitHub API を実行するワークフロー
 - GItHub CLI を利用する
@@ -266,6 +265,60 @@
       steps.meta.outputs.update-type != 'version-update:semver-major' }}`
     ```
 
+# コンテキストによるフロー制御
+- ジョブやステップの終了状態
+  - success: 実行が成功した
+  - failure: 実行が失敗した
+  - cancelled: 実行をキャンセルした
+  - skipped: 実行をスキップした
+  - * コンテキストからもこの終了状態を取得できる
+    - `steps` コンテキスト：ステップの終了状態を保持
+      - `steps` コンテキストのオブジェクト
+        - ```
+          {
+            "outcome": "failure",
+            "conclusion": "success",
+            "outputs": {
+              "foo": "A step value"
+            }
+          }
+          ```
+    　　　　　- `outcome プロパティ`: **Continue on Error** 適用前の状態
+    　　　　　- Continue on Error の有無に左右されない
+      　　　　　- 実行結果の生情報と考えられる
+    　　　　　- `conclusion` プロパティ: **Continue on Error** 適用前の状態
+      　　　　　- Continue on Error が有効な場合、エラー発生時も「success」がセットされる
+    - `needs` コンテキスト：（依存している）ジョブの終了状態を保持
+      - `needs` コンテキストのオブジェクト
+        - ```
+          {
+            "result": "success",
+            "outputs": {
+              "bar": "A job value"
+            }
+          }
+          ```
+- コンテキストとステータスチェック関数の併用
+  - 実際のフロー制御の例
+    - 2パターンのエラーが発生します。ステップ1でエラーになるか、ステップ2でエラーになるか
+    - ロジック
+      - ステップ1：終了ステータスが50%の確率でゼロ以外になり、エラー終了する
+      - ステップ2：ステップ1が正常終了した場合のみ実行され、必ずエラー終了する
+      - ステップ3：ステップ2が実行された場合のみ、メッセージを標準出力する
+    - ```
+      name: Flow control
+      on: push
+      jobs:
+        run:
+          runs-on: ubuntu-latest
+          steps:
+            - run: exit "$(( RANDOM % 2 ))"
+            - run: exit 1
+              id: error
+            - run: echo "Catch error step"
+              if: ${{ failure() && steps.error.outcome == 'failure' }}
+      ```
+      
 # ジョブの並列実行と逐次実行
 - **並列**実行
   - ```
@@ -547,4 +600,64 @@ steps:
               node-version: ${{ matrix.version }}
           - run: echo "${RUNNER_OS}" && node --version
     ```
+  - **動的なマトリックスの生成**
+    - ```
+      name: Dynamic matrix
+      on: push
+      jobs:
+        prepare:
+          runs-on: ubuntu-latest
+          steps:
+            - id: dynamic
+              run: | # マトリックス定義をJSON文字列で記述
+                json='{"runner": ["ubuntu-latest", "macos-latest"]}'
+                echo "json=${json}" >> "${GITHUB_OUTPUT}"
+          outputs:   # マトリックス定義のJSON文字列をジョブ出力値へセット
+            matrix-json: ${{ steps.dynamic.outputs.json }}
+        print:
+          needs: [prepare]
+          strategy:  # JSON文字列からfromJSON関数で動的にマトリックスを生成
+            matrix: ${{ fromJSON(needs.prepare.outputs.matrix-json) }}
+          runs-on: ${{ matrix.runner }}
+          steps:
+            - run: echo "${RUNNER_OS}"
+      ```
 
+# エラーハンドリング
+- エラーを握りつぶして次の処理に進みたいとき
+  - `continue-on-error` キーを使う
+  - この時、途中でエラーが発生しても、**ワークフロー自体は正常終了扱いされる**
+    - ```
+      name: Continue on Error
+      on: push
+      jobs:
+        failure:
+          runs-on: ubuntu-latest
+          steps:
+            - run: exit 1             # 終了ステータスがゼロ以外なので、エラーが発生する
+              continue-on-error: true # Continue on Errorが発生したエラーを握りつぶす
+            - run: echo "Success"     # 素知らぬ顔で実行され、ワークフローは正常終了する
+      ```
+- マトリックスのフェイルファストの無効化
+  - マトリックスを使うと、複数のジョブが並列に起動する
+    - 途中でエラーが発生し、ジョブが停止することがあるが、この時、**他のジョブも止まる**
+      - 他のジョブに影響を受けたくない場合
+        - ```
+          strategy:
+            fail-fast: false
+          ```
+        - ```
+          name: Fail-fast matrix
+          on: push
+          jobs:
+            run:
+              runs-on: ubuntu-latest
+              strategy:
+                fail-fast: false     # マトリックスのフェイルファストを無効化する
+                matrix:
+                  time: [10, 20, 30] # ジョブごとに異なる時間スリープさせる
+              steps:
+                - run: sleep "${SLEEP_TIME}" && exit 1
+                  env:
+                    SLEEP_TIME: ${{ matrix.time }}
+          ```
