@@ -114,6 +114,12 @@
   - `github.event.pull_request.title`
     - 実際の書き方例
       - `${{ github.event.pull_request.title }}`
+- プルリクエストの本文
+  - `github.event.pull_request.body`
+- Issue のタイトル
+  - `github.event.issue.title`
+- ブランチ名
+  - `github.head_ref`
 - ランナー名
   - `runner.name`
 - OS（Linux / Windows / macOS）
