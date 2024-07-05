@@ -265,6 +265,60 @@
       steps.meta.outputs.update-type != 'version-update:semver-major' }}`
     ```
 
+# コンテキストによるフロー制御
+- ジョブやステップの終了状態
+  - success: 実行が成功した
+  - failure: 実行が失敗した
+  - cancelled: 実行をキャンセルした
+  - skipped: 実行をスキップした
+  - * コンテキストからもこの終了状態を取得できる
+    - `steps` コンテキスト：ステップの終了状態を保持
+      - `steps` コンテキストのオブジェクト
+        - ```
+          {
+            "outcome": "failure",
+            "conclusion": "success",
+            "outputs": {
+              "foo": "A step value"
+            }
+          }
+          ```
+    　　　　　- `outcome プロパティ`: **Continue on Error** 適用前の状態
+    　　　　　- Continue on Error の有無に左右されない
+      　　　　　- 実行結果の生情報と考えられる
+    　　　　　- `conclusion` プロパティ: **Continue on Error** 適用前の状態
+      　　　　　- Continue on Error が有効な場合、エラー発生時も「success」がセットされる
+    - `needs` コンテキスト：（依存している）ジョブの終了状態を保持
+      - `needs` コンテキストのオブジェクト
+        - ```
+          {
+            "result": "success",
+            "outputs": {
+              "bar": "A job value"
+            }
+          }
+          ```
+- コンテキストとステータスチェック関数の併用
+  - 実際のフロー制御の例
+    - 2パターンのエラーが発生します。ステップ1でエラーになるか、ステップ2でエラーになるか
+    - ロジック
+      - ステップ1：終了ステータスが50%の確率でゼロ以外になり、エラー終了する
+      - ステップ2：ステップ1が正常終了した場合のみ実行され、必ずエラー終了する
+      - ステップ3：ステップ2が実行された場合のみ、メッセージを標準出力する
+    - ```
+      name: Flow control
+      on: push
+      jobs:
+        run:
+          runs-on: ubuntu-latest
+          steps:
+            - run: exit "$(( RANDOM % 2 ))"
+            - run: exit 1
+              id: error
+            - run: echo "Catch error step"
+              if: ${{ failure() && steps.error.outcome == 'failure' }}
+      ```
+      
 # ジョブの並列実行と逐次実行
 - **並列**実行
   - ```
