@@ -16,7 +16,7 @@
     permissions:
        contents: read
     packages: write
-    ``` 
+    ```
 - ワークフローのタイムアウト
   - ```
     defaults:
