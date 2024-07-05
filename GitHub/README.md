@@ -568,3 +568,42 @@ steps:
           steps:
             - run: echo "${RUNNER_OS}"
       ```
+
+# エラーハンドリング
+- エラーを握りつぶして次の処理に進みたいとき
+  - `continue-on-error` キーを使う
+  - この時、途中でエラーが発生しても、**ワークフロー自体は正常終了扱いされる**
+    - ```
+      name: Continue on Error
+      on: push
+      jobs:
+        failure:
+          runs-on: ubuntu-latest
+          steps:
+            - run: exit 1             # 終了ステータスがゼロ以外なので、エラーが発生する
+              continue-on-error: true # Continue on Errorが発生したエラーを握りつぶす
+            - run: echo "Success"     # 素知らぬ顔で実行され、ワークフローは正常終了する
+      ```
+- マトリックスのフェイルファストの無効化
+  - マトリックスを使うと、複数のジョブが並列に起動する
+    - 途中でエラーが発生し、ジョブが停止することがあるが、この時、**他のジョブも止まる**
+      - 他のジョブに影響を受けたくない場合
+        - ```
+          strategy:
+            fail-fast: false
+          ```
+        - ```
+          name: Fail-fast matrix
+          on: push
+          jobs:
+            run:
+              runs-on: ubuntu-latest
+              strategy:
+                fail-fast: false     # マトリックスのフェイルファストを無効化する
+                matrix:
+                  time: [10, 20, 30] # ジョブごとに異なる時間スリープさせる
+              steps:
+                - run: sleep "${SLEEP_TIME}" && exit 1
+                  env:
+                    SLEEP_TIME: ${{ matrix.time }}
+          ```
