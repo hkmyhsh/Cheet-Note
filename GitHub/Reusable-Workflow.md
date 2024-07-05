@@ -47,7 +47,7 @@
             description: メッセージ                         # 出力値の概要
         ```
 
-# Reusable Workflowsのジョブ定義
+# Reusable Workflows のジョブ定義
 - 定義
   - 下記のような項目を通常通り定義可能
     - ランナー
@@ -93,4 +93,28 @@
               GITHUB_TOKEN: ${{ secrets.token }}
         outputs:
           pr-comment: ${{ steps.pr-comment.outputs.body }}
+    ```
+
+# Reusable Workflows 呼び出しワークフロー
+- 記載例
+  - ```
+    name: Call
+    on: pull_request
+    jobs:
+      call:
+        uses: ./.github/workflows/reusable-workflows.yml # Reusable Workflowsの指定
+        with:                                            # 平文の入力パラメータ指定
+          pr-number: ${{ github.event.pull_request.number }}
+        secrets:                                         # Secretsの入力パラメータ指定
+          token: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          contents: read
+          pull-requests: write
+      print:
+        needs: [call]
+        runs-on: ubuntu-latest
+        steps:
+          - run: echo "Result> ${MESSAGE}"
+            env:
+              MESSAGE: ${{ needs.call.outputs.message }} # 出力値の参照
     ```
