@@ -33,8 +33,37 @@
         private-key: ${{ secrets.PRIVATE_KEY }} # GitHub Appsの秘密鍵
         repositories: ${{ env.TARGET_REPO }}    # アクセスを許可するリポジトリ
     ```
-  - 【追記】シェルスクリプトでもトークン生成実装
+  - 【備考】シェルスクリプトでもトークン生成実装
     - `GitHub API` の認証には `JWT` が必要
+      - Base64URL エンコード関数と署名関数を定義する必要がある
+        - 関数の実行には `OpenSSL` が必要
+      - **JWT**
+        - ヘッダー
+          - ```
+            {
+              "alg": "RS256",
+              "typ": "JWT"
+            }
+            ```
+          - Base64UR Lエンコード
+            - `header="$(printf '{"alg":"RS256","typ":"JWT"}' | base64url)"`
+        - ペイロード
+          - ```
+            {
+             "iss": "<App ID>",
+             "iat": "<作成日時>",
+             "exp": "<有効期限>"
+            }
+            ```
+          - Base64URL エンコード
+            - ```
+              template='{"iss":"%s","iat":%s,"exp":%s}'
+              payload="$(printf "${template}" "${APP_ID}" "${iat}" "${exp}" | base64url)"
+              ```
+        - 署名の生成 及び Base64 エンコード
+          - `signature="$(printf '%s' "${header}.${payload}" | sign | base64url)"`
+        - JWT の組み立て
+          - `jwt="${header}.${payload}.${signature}"`
     - 大まかな処理フロー
       1. App IDと秘密鍵を使って、GitHub APIのアクセスに使うJWTを作成する
       2. Installation APIを実行し、Installation IDを取得する
@@ -42,10 +71,12 @@
     - ```
       #!/usr/bin/env bash
 
+      # Base64 へのエンコード関数
       base64url() {
         openssl enc -base64 -A | tr '+/' '-_' | tr -d '='
       }
 
+      # SHA-256 アルゴリズムを利用して GitHub Apps へ登録した秘密鍵を使用して署名する
       sign() {
         openssl dgst -binary -sha256 -sign <(printf '%s' "${PRIVATE_KEY}")
       }
