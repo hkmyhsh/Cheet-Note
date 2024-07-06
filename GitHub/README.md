@@ -10,13 +10,24 @@
   - ```
     GITHUB_TOKENの権限をデフォルトから変更したい場合、permissionsでワークフロー、ジョブ単位で権限を指定する。contentsなど、それぞれのスコープに対してread、write、noneの3種類の許可を与えられている。
     ```
+  - `GITHUB_TOKEN` がアクセスできるリソース: **ワークフローを実行するリポジトリだけ**
+  - `GITHUB_TOKEN` 棋院でのイベント（プルリクエストなど）では**ワークフローが起動しない**
+  - リポジトリで設定した**デフォルトパーミッション**よりも優先される
   - **パーミッション記述時は、ソースコードの読み込みにも明示的な許可が必要**
     - `contents: read`
-  - ```
-    permissions:
-       contents: read
-    packages: write
-    ```
+    - ```
+      permissions:
+        contents: read
+        packages: write
+      ```
+  - パーミッションの**無効化**
+    - `permissions: {}`
+  - 主なパーミッションのスコープ
+    - `contents`: コード
+    - `packages`: パッケージ
+    - `actions`: ワークフローの起動
+    - `id-token`: OpenID Connect でクラウドプロバイダへのアクセス
+  
 - ワークフローのタイムアウト
   - ```
     defaults:
