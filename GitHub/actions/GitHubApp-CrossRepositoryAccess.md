@@ -112,5 +112,36 @@
         --data "$(printf '{"repositories":["%s"]}' "${TARGET_REPO}")" \
         | jq -r '.token'
       )"
-      echo "token=${token}" >>"${GITHUB_OUTPUT}"
+      echo "token=${token}" >>"${GITHUB_OUTPUT}
       ```
+    - 上記シェルスクリプトを呼び出すワークフロー
+      - ```
+        name: Modified cross repo
+        on: push
+        env:
+          TARGET_REPO: another-repo
+        jobs:
+          checkout:
+            runs-on: ubuntu-latest
+            steps:
+              - uses: actions/checkout@v4       # スクリプト実行にはチェックアウトが必要
+              - id: create
+                run: .github/scripts/token.sh   # GitHub Appsトークン生成スクリプトの実行
+                env:                            # App IDや秘密鍵は環境変数で渡すことに注意
+                  APP_ID: ${{ secrets.APP_ID }}
+                  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+              - uses: actions/checkout@v4
+                with:
+                  repository: ${{ github.repository_owner }}/${{ env.TARGET_REPO }}
+                  path: ${{ env.TARGET_REPO }}
+                  token: ${{ steps.create.outputs.token }}
+              - run: cat "${TARGET_REPO}/README.md"
+              - run: |                                               # 即時失効APIの実行
+                curl --location --silent --request DELETE \
+                  --url "${GITHUB_API_URL}/installation/token" \
+                  --header "Accept: application/vnd.github+json" \
+                  --header "X-GitHub-Api-Version: 2022-11-28" \
+                  --header "Authorization: Bearer ${TOKEN}"
+                env:
+                  TOKEN: ${{ steps.create.outputs.token }}           # GitHub Appsトークン
+        ```
