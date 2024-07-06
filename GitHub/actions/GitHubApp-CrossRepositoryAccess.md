@@ -10,7 +10,7 @@
         runs-on: ubuntu-latest
         steps:
           - id: create                                 # GitHub Appsトークンの生成
-            uses: actions/create-github-app-token@v1
+            uses: actions/create-github-app-token@7bfa3a4717ef143a604ee0a99d859b8886a96d00 # v1.9.3
             with:
               app-id: ${{ secrets.APP_ID }}
               private-key: ${{ secrets.PRIVATE_KEY }}
