@@ -141,6 +141,29 @@
     console.log(d); // エラーになる
     ```
 
+# 型エイリアス
+- 型に別名（エイリアス）をつけて宣言をする仕組み
+  - ```
+    type Code = string;
+    let a: Code = 'a12'
+    let b: Code = '100'
+    let c: Code = 100; // エラー
+    ```
+- タプル型も使える
+  - ```
+    type BasicTuple = [string, number, boolean];
+    let a: BasicTuple = ['meat', 10, true];
+    let b: BasicTuple = ['vegetable', 20, false];
+    let c: BasicTuple = ['grain', 30, 'rice']; // エラー
+    ```
+- 合併（プリミティブ）型
+  - ```
+    type Line = number | boolean;
+    let a: Line = 0;
+    let b: Line = true;
+    let c: Line = 'ok'; // エラー
+    ```
+
 # オブジェクト
 - 辞書オブジェクト
   - インデックスシグネクチャの書き方
@@ -242,3 +265,10 @@
         // 下記の場合エラー
         // fn(n as string);
       
+# 設定
+- **strictNullish**
+  - `null` / `undefined' を許容しない設定
+    - ```
+      let n: number = null; // エラー
+      let s: string = undefined; // エラー
+      ```
