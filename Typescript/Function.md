@@ -24,3 +24,49 @@
       }
       ```
     - 戻り値を返すと**エラー**になる
+  - **最後まで到達されることはない**関数
+    - ```
+      // スローにより、到達される事は無い
+      function fnError(): never{
+        throw new Error('Error');
+      }
+      // 永久ループにより、到達される事は無い
+      function fnInfinite(): never{
+        for (;;) {}
+      } 
+      // 型推論によりnever型
+      function fnReturnInfinite(){
+        return fnInfinite();
+      }
+      ```
+  - **引数を省略可能にする**
+    - `?`をつけた関数は省略可能になる
+      - 省略された場合は`undefined`になる
+      - ただし、順番として**必須引数が後に来るのはエラー**になる
+    - ```
+      function add(a: number, b?: number): number{
+        if(b === undefined){
+          b = 0;
+        }
+        return a + b;
+      }
+      ```
+  - **デフォルト値**の設定
+    - ただし、順番として**必須引数が後に来るのはエラー**になる
+    - ```
+      function add(a: number, b: number = 0): number{
+        return a + b;
+      }
+      ```
+  - **可変長引数**の設定
+    - `...`（ドット3つ）を前につけると**可変長**となる`配列`として受け取る
+    - ```
+      function join(...strs: string[]): string{
+        let res = "";
+        for(let str of strs){
+          res += str;
+        }
+        return res;
+      }
+      console.log(join('ab', 'cd', 'ef')); // "abcdef"
+      ```
