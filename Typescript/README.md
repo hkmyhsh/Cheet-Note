@@ -12,7 +12,7 @@
   - `const big: bigint = 500n;`
 - **boolean**型（true / false）
   - `const isStart: boolean = false;`
-- **string**型（" または ' でくくる）
+- **string**型（`"` または `'` でくくる）
   - ```
     let s: string = 'Hello';
     s = "TypeScript";
