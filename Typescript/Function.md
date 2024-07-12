@@ -1,4 +1,4 @@
-# 型アノテーション
+# 関数
 - 単純な関数
   - ```
     function fn(a) {
@@ -69,4 +69,87 @@
         return res;
       }
       console.log(join('ab', 'cd', 'ef')); // "abcdef"
+      ```
+
+# 無名関数
+- 関数式
+  - ```
+    const add = function(a: number, b: number): number{
+      return a + b;
+    };
+    console.log(typeof add); // "function" 
+    console.log(add(1, 2)); // 3
+    ```
+- アロー関数
+  - `=>（アロー）`を使った関数式
+  - ```
+    const add = (a: number, b: number): number => {
+      return a + b;
+    };
+    ```
+  - **処理が一文の場合**は`{・・・}`を省略できる
+  - 式そのものが戻り値とみなされ、`return` の省略もできる
+    - ```
+      const add = (a: number, b: number): number =>　a + b;
+      ```
+- 関数コンストラクタ
+  - TypeScript による型のサポートはされていないので**使うべきではない**
+  - ```
+    const add = new Function('a', 'b', 'return a + b;');
+    ```
+
+# オーバーロード
+- サンプルコード
+  - ```
+    function isPositiveNumber(a: any ): boolean{
+      if(typeof a === "number"){
+        return a > 0;
+      }else{
+        return a;
+      }
+    }
+    ```
+    - number型やboolean型を受け取った場合は順当な結果を返すが、**string**型を受け取った際に**予期せぬ結果が返ってきてしまう
+      - ```
+        console.log(isPositiveNumber(-1)); // false
+        console.log(isPositiveNumber(true)); // true
+        console.log(isPositiveNumber("abc")); // "abc"
+        ```
+- 関数シグニチャ
+  - TypeScript では**引数、戻り値の型チェックをする**ため関数シグニチャを定義しておく
+    - ```
+      function isPositiveNumber(a: number): boolean;
+      function isPositiveNumber(a: boolean): boolean;
+      function isPositiveNumber(a: any ): boolean{ …… // 先程の関数本体
+      ```
+      - **型チェックがされ、number型やboolean型以外だとエラーになる**
+        - ```
+          console.log(isPositiveNumber("abc")); // エラー
+          ```
+  - オーバーロードではなく、合併型でも型チェックされる
+    - ```
+      function isPositiveNumber(a: number | boolean ): boolean{ ……
+      ```
+- 型エイリアスによるオーバーロード
+  - **説明用**
+    - ```
+      type IsPositiveNumber = {
+        (a: number): boolean;
+        (a: boolean): boolean;
+      }
+      const isPositiveNumber: IsPositiveNumber = (a: any ): boolean => {
+        if(typeof a === "number"){
+          return a > 0;
+        }else{
+          return a;
+        }
+      }
+      ```
+  - **本来の書き方**
+    - ```
+      type IsPositiveNumber = {
+        (a: number): boolean;
+        (a: boolean): boolean;
+      }
+      const isPositiveNumber: IsPositiveNumber = (a: number | boolean): boolean => { ……
       ```
