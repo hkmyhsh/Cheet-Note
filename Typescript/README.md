@@ -225,4 +225,9 @@
       numsB[0] = 100;
       console.log(numsA); // [1, 2]
       ```
-    
+- 型アサーション
+  - コンパイラに対し**型を表明（アサーション）する機能**
+    - ```
+      let u: unknown = '100'; // 数字を代入
+      console.log((u as string).length); // 3
+      ```
