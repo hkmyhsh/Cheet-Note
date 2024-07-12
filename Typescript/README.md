@@ -38,9 +38,10 @@
     console.log(d); // エラーになる
     ```
 
-# チェック用演算子
-- 型の確認
+# 判定用演算子
+- 型の判定
   - `typeof` 演算子
+  - **null の場合は `object` を返す**
   - ```
     let d;
     console.log(typeof d); // "undefined"
@@ -54,4 +55,21 @@
     }
     // "d は number型です" と出力
     ```
-- 
+- インスタンスの判定
+  - `instanceof` 演算子
+  - ```
+    class User { }
+    const user = new User();
+    console.log(user instanceof User); // true
+    ```
+- nullの判定
+  - 初期値が null なら any 型だと判断される
+  - ```
+    //let a: any = null; と同じ
+    let a = null;
+    console.log(typeof a); // "object"
+    a = 1;
+    console.log(typeof a); // "number"
+    a = 'Hello';
+    console.log(typeof a); // "string"
+    ```
