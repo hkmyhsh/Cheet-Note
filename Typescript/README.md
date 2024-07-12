@@ -37,7 +37,10 @@
     let d: number;
     console.log(d); // エラーになる
     ```
+
+# チェック用演算子
 - 型の確認
+  - `typeof` 演算子
   - ```
     let d;
     console.log(typeof d); // "undefined"
@@ -45,11 +48,10 @@
   - ```
     const d = 255;
     if(typeof d === "number"){
-　     console.log("d は number型です");
+      console.log("d は number型です");
     }else{
-　    console.log("d は number型ではありません");
+      console.log("d は number型ではありません");
     }
     // "d は number型です" と出力
     ```
-
-# 
+- 
