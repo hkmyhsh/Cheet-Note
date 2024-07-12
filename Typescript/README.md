@@ -48,6 +48,22 @@
         numsB[0] = 100;
         console.log(numsA); // [1, 2]
         ```
+- **合併（プリミティブ）型**
+  - 
+  - `n:1` の場合
+    - ```
+      let sns: (string | number)[] = [10, 'abc', 100];
+      for(let sn of sns){
+        if(typeof sn === 'number'){
+          console.log(sn * 10);
+        }else{
+          console.log(sn);
+        }
+      }
+      /* 100 
+　        "abc" 
+　        1000 */
+      ```
 - **タプル**型
   - `[]` となる
     - 複数の型を格納できる
@@ -82,11 +98,43 @@
         ```
       - この場合 Blue の値は 11 となります
 - **any**型（すべての型を代入できる）
+  - **制限なく操作ができてしまう分危険**
   - ```
     let d: any = 255;
     d = 100;　// 100 を代入
     d = 'Hello'; // 違う型でもエラーにならない
     ```
+- **unknown**型（何のわからない）
+  - any型と同じく、すべての型を受け取ることができる
+  - 何の型か「わからない」ため**何もすることができない**
+    - `Object is of type 'unknown'.` というエラー
+  - ```
+    let a: unknown = 'abc';
+    console.log(a.toLocaleUpperCase()); // エラー
+    console.log(a + 10); // エラー 
+    a = 20;
+    console.log(a.toLocaleUpperCase); // エラー
+    ```
+  - 使い方① **型ガード**
+    - ```
+      let a: unknown = 'abc';
+      if(typeof a === 'string'){
+        console.log(a.toLocaleUpperCase()); // "ABC" 
+      }
+      if(typeof a === 'number'){
+      // 判定が偽となるので、このブロックは処理されない
+        console.log(a + 10);
+      }
+      ```
+  - 使い方② **any型を返す関数の受け取りに使う** / **外部から任意の値を受け取る**
+    - ```
+      const fn = (): any =>　"abc";
+      let a:unknown = fn();
+      if(typeof a === 'string'){
+        console.log(a.toLocaleUpperCase()); // "ABC" 
+      }
+      ```
+
 - **初期値がない状態**（あたいが入っていない状態で使おうとすると**エラー**）
   - ```
     let d: number;
@@ -117,7 +165,20 @@
       // "clean_0001:broom" 
       // "clean_0002:dustpan"
       ```
-
+  - **`delete` キーワードで削除**
+    - ```
+      delete tools['clean_0001'];
+      Object.entries(tools).forEach(([key, value]) => console.log(key + ':' + value));
+      // "clean_0002:dustpan"
+      ```
+  - **合併（プリミティブ）型**
+    - `n:1` の場合
+      - ```
+        let sn: string | number = 10;
+        sn = 'abc';
+        sn = 100;
+        sn = true; // エラー
+        ```
 
 # 判定用演算子
 - **型の判定**
