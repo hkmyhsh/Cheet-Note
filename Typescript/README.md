@@ -209,7 +209,7 @@
     fn('abc');
     fn(2); // エラー
     ``` 
-- **enum**型と混ぜてみる
+- **enum**型と混ぜてみる（下記サンプルに**注意**あり）
   - ```
     enum Plant{TULIP, WEED, DAHLIA, GRASS}
     type FlowerGroup = Plant.TULIP | Plant.DAHLIA;
@@ -217,7 +217,7 @@
     let f: FlowerGroup;
     f = Plant.TULIP;
     f = Plant.DAHLIA;
-    f = 100; // 100はnumber型なので通ってしまう
+    f = 100; // 【注意】列挙値はnumber型のためか、100を許容してしまう
     f = Plant.WEED; // エラー
     f = Plant.GRASS; // エラー
     ```
