@@ -26,6 +26,28 @@
     TypeScript 4
     */
     ```
+- 配列型
+  - `type[]` または `Array<type>` となる
+  - ```
+    const nums: number[] = [10, 20 , 30];
+    const strs: string[] = ["foo", "bar" , "hoge"];
+    ```
+  - **コピー**
+    - **参照**
+      - ```
+        const numsA = [1, 2];
+        const numsB = numsA; // numsB には numsA の参照が入る
+        numsB[0] = 100;
+        console.log(numsA); // [100, 2]
+        ```
+    - **参照ではなく、値を入れるだけ**
+      - ```
+        const numsA = [1, 2];
+        const numsB = [...numsA]; 
+        numsB[0] = 100;
+        console.log(numsA); // [1, 2]
+        ```
+
 - any型（すべての型を代入できる）
   - ```
     let d: any = 255;
