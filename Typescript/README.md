@@ -94,6 +94,30 @@
     ```
 
 # オブジェクト
+- 辞書オブジェクト
+  - インデックスシグネクチャの書き方
+    - `[キー名: キーの型]: 値の型`
+    - 例: キーがstring型、値がstring型の場合
+      - `[key: string]: string`
+  - ```
+    const tools: { [code: string]: string } = {};
+    tools['clean_0001'] = 'broom';
+    tools['clean_0002'] = 'dustpan';
+    console.log(tools['clean_0001']);// "broom" 
+    console.log(tools['clean_0003']); // undefined
+    tools['clean_0002'] = 10; // エラー
+    // Type 'number' is not assignable to type 'string'.
+    ```
+  - **ループで回してみる**
+    - ```
+      const tools: { [code: string]: string } = {};
+      tools['clean_0001'] = 'broom';
+      tools['clean_0002'] = 'dustpan';
+      Object.entries(tools).forEach(([key, value]) => console.log(key + ':' + value));
+      // "clean_0001:broom" 
+      // "clean_0002:dustpan"
+      ```
+
 
 # 判定用演算子
 - **型の判定**
