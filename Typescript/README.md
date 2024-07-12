@@ -217,7 +217,7 @@
     ```
 
 # 各種メソッド
-- 配列の結合
+- **配列の結合**
   - `concat` メソッド
     - ```
       const numsA = [1, 2];
@@ -225,9 +225,20 @@
       numsB[0] = 100;
       console.log(numsA); // [1, 2]
       ```
-- 型アサーション
+- **型アサーション**
   - コンパイラに対し**型を表明（アサーション）する機能**
     - ```
       let u: unknown = '100'; // 数字を代入
       console.log((u as string).length); // 3
       ```
+    - 関数の引き渡しでも利用可能
+      - ```
+        function fn(s:string){
+          console.log(s); // 100
+          console.log(s.length); // undefined 
+        }
+        let n = 100;
+        fn(n as any);
+        // 下記の場合エラー
+        // fn(n as string);
+      
