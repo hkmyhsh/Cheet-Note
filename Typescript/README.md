@@ -16,4 +16,40 @@
   - ```
     let s: string = 'Hello';
     s = "TypeScript";
+    const word: string = "TypeScript";
+    const version: number = 3;
+    const message: string = `Hello
+    ${word} ${version + 1}`;
+    console.log(message);
+    /*
+    Hello
+    TypeScript 4
+    */
     ```
+- any型（すべての型を代入できる）
+  - ```
+    let d: any = 255;
+    d = 100;　// 100 を代入
+    d = 'Hello'; // 違う型でもエラーにならない
+    ```
+- 初期値がない状態（あたいが入っていない状態で使おうとすると**エラー**）
+  - ```
+    let d: number;
+    console.log(d); // エラーになる
+    ```
+- 型の確認
+  - ```
+    let d;
+    console.log(typeof d); // "undefined"
+    ```
+  - ```
+    const d = 255;
+    if(typeof d === "number"){
+　     console.log("d は number型です");
+    }else{
+　    console.log("d は number型ではありません");
+    }
+    // "d は number型です" と出力
+    ```
+
+# 
