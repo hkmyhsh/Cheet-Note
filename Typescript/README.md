@@ -164,8 +164,66 @@
     let c: Line = 'ok'; // エラー
     ```
 
-# オブジェクト
-- 辞書オブジェクト
+# リテラル型
+- **文字リテラル**型
+  - '直接の文字列' そのものを型にしたもの
+    - ```
+      let a: 'abc';
+      a = 'abc';
+      a = 'def'; // エラー
+      ```
+      - 変数aは`abc`という文字列のみ許容
+    - ```
+      type Suntime = 'morning' | 'noon' | 'afternoon';
+      function logSuntime(s:Suntime){
+        console.log(s);
+      }
+      logSuntime('noon');
+      logSuntime('night'); // エラー
+      ```
+      - Subtime型は `morning` / `noon` / `afternoon` のみ許容している
+- **数値リテラル**型
+  - ```
+    type OmikujiType = 1 | 2 | 3;
+    let o: OmikujiType;
+    o = 1;
+    o = 2;
+    o = 3;
+    o = 1 + 1; // エラー
+    ```
+    - `1 + 1` は **number**型 なのでエラーとなる
+- **その他のリテラル**型
+  - ```
+    type nonType = '' | undefined;
+    let non: nonType;
+    non = '';
+    non = undefined;
+    non = null; // エラー
+    ```
+- **組み合わせ**型
+  - ```
+    type ParamType = 1 | 'abc' | false ;
+    function fn(p: ParamType){
+      console.log(p);
+    }
+    fn('abc');
+    fn(2); // エラー
+    ``` 
+- **enum**型と混ぜてみる
+  - ```
+    enum Plant{TULIP, WEED, DAHLIA, GRASS}
+    type FlowerGroup = Plant.TULIP | Plant.DAHLIA;
+    console.log(typeof Plant.TULIP); // "number" 
+    let f: FlowerGroup;
+    f = Plant.TULIP;
+    f = Plant.DAHLIA;
+    f = 100; // 100はnumber型なので通ってしまう
+    f = Plant.WEED; // エラー
+    f = Plant.GRASS; // エラー
+    ```
+
+# その他の型
+- 辞書
   - インデックスシグネクチャの書き方
     - `[キー名: キーの型]: 値の型`
     - 例: キーがstring型、値がstring型の場合
