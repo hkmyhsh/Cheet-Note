@@ -48,3 +48,33 @@
   - `docker compose up`
 - **Compose ファイル** に記載されたコンテナを停止し削除する
   - `docker compose down`
+- **Compose ファイル** の例
+  - ```
+    services:
+      wordpress:  # wordpressコンテナの定義 
+        image: wordpress:6.3
+        restart: always
+        ports:
+          - 127.0.0.1:8080:80  # コンテナのポートをホストに紐付け 
+        environment:  # 環境変数の指定 
+          WORDPRESS_DB_HOST: db
+          WORDPRESS_DB_USER: exampleuser
+          WORDPRESS_DB_PASSWORD: examplepass
+          WORDPRESS_DB_NAME: exampledb
+        volumes:
+          - wordpress:/var/www/html  # ボリュームをコンテナ内にマウント 
+      db:  # dbコンテナの定義 
+        image: mariadb:11.1
+        restart: always
+        environment:  # 環境変数の指定 
+          MYSQL_DATABASE: exampledb
+          MYSQL_USER: exampleuser
+          MYSQL_PASSWORD: examplepass
+          MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        volumes:
+          - db:/var/lib/mysql  # ボリュームをコンテナ内にマウント 
+    volumes:  # 各コンテナが使うボリュームの定義 
+      wordpress:
+      db:
+    EOF
+    ```
