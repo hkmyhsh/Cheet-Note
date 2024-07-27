@@ -45,9 +45,9 @@
 - **Compose ファイル** で指定されたビルドを実行する
   - `docker compose build`
 - **Compose ファイル** に記載されたコンテナを起動する
-  - `docker compose up`
+  - `docker compose up -d`
 - **Compose ファイル** に記載されたコンテナを停止し削除する
-  - `docker compose down`
+  - `docker compose down -v`
 - **Compose ファイル** の例
   - ```
     services:
