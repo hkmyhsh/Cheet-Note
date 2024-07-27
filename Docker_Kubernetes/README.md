@@ -37,4 +37,14 @@
   - `docker volume ls`
 - コンテナのポートをホスト上で公開
   - `docker run -d --name [コンテナ名] -p [ホスト側のIP]:[ホスト側のポート]:[コンテナ側の
-ポート] [イメージ名]:[タグ]`
+ポート] nginx:1.25
+    - **コンテナへ紐付けされたホストのポート**を通じてコンテナ内で稼働するnginxにアクセスできる
+      - `curl [ホスト側のIP]:[ホスト側のポート]`
+
+# **docker compose** による複数のコンテナをまとめて管理
+- **Compose ファイル** で指定されたビルドを実行する
+  - `docker compose build`
+- **Compose ファイル** に記載されたコンテナを起動する
+  - `docker compose up`
+- **Compose ファイル** に記載されたコンテナを停止し削除する
+  - `docker compose down`
