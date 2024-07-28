@@ -119,3 +119,39 @@
     etc/alternatives/awk
     etc/alternatives/nawk
     ```
+
+# Docker 25 でイメージの解剖
+- ```
+  mkdir dumpimage
+  docker save myimage:v1 | tar -xC ./dumpimage
+  tree ./dumpimage
+  ./dumpimage
+  ├── blobs
+  │   └── sha256
+  │       ├── 6c41b3ad21c6d93dc9adf9054ba987700dccd12bbde87582ec1e1d7ba529c8de
+  │       ├── 6d8c53204156be8d8752cb2e339c27b906d743e2ea674bf75c246660c91432ef
+  │       ├── 8e87ff28f1b5ff2d5131999ccfa1e674cb252631c50683f5ee43fad59cbea8e1
+  │       ├── a30edb318c3f40f7fb27c97a63ab1cc9d940c982f99d854417b69a7d83600e52
+  │       ├── caf72639435ec32449e8d10add3d4cc3ffaf8f511224472aa16e66ecf1ab8bd8
+  │       └── fd7901b2e46a364d23b07293a4a17ebbc6767909195e6c473e0396e14981a9a3
+  ├── index.json
+  ├── manifest.json
+  ├── oci-layout
+  └── repositories
+
+  2 directories, 10 files
+  ```
+- レイヤに含まれるファイル群
+- ```
+  tar --list -f ./dumpimage/blobs/sha256/8e87ff28f1b5ff2d5131999ccfa1e674cb252631c50683f5ee43fad59cbea8e1 | head -n 10
+  bin
+  boot/
+  dev/
+  etc/
+  etc/.pwd.lock
+  etc/adduser.conf
+  etc/alternatives/
+  etc/alternatives/README
+  etc/alternatives/awk
+  etc/alternatives/nawk
+  ```
