@@ -12,7 +12,7 @@
 - kube-scheduler: **コンテナのデプロイ時にそのスケジューリング**（実行ノードの選択）を行うスケジューラ
 - kube-apiserver: **管理情報の紹介や変更要求**を HTTP API で受ける
 
-# kubectl コマンド使用例
+# kubectlコマンド使用例
 - nginx のデプロイ
   - `kubectl create deployment nginx-deployment --image=nginx:1.25`
     - ![image](https://github.com/user-attachments/assets/ed7ca520-5d86-4192-8bb0-cc9ea040490d)
@@ -22,6 +22,12 @@
   - `kubectl delete deployment [Deployment名]`
 - コンテナ（Pod）が1つ実行される
   - `kubectl get pods`
+- pod作成
+  - `kubectl apply -f [podのマニフェストファイル]`
+- pod内のファイルを確認
+  - `kubectl exec -it example-pod -c alpine -- wget -qO - localhost:80/date.json | head -n 3`
+- podの削除
+  - `kubectl delete -f [podのマニフェストファイル]`
 
 # kubernetes マニフェストを使ってデプロイ
 - マニフェストファイル
@@ -99,3 +105,7 @@
         emptyDir:
           sizeLimit: 500Mi
     ```
+  - 1つめは nginx を実行するコンテナ: 80番ポートでHTTP接続を受ける
+  - 2つめは alpine コンテナ: シェルスクリプトを実行し、一定時間毎にタイムスタンプをファイルに書き込む
+    - 2つのコンテナは `docroot` と名付けたボリュームを共有する* Kubernetesを管理するストレージ領域
+    - このボリュームを介して、alpineが書き込むデータがnginxコンテナに共有され、nginxサーバがそれを80番で公開する
