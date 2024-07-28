@@ -5,6 +5,8 @@
 - ![image](https://github.com/user-attachments/assets/d87fe606-00dd-44a0-91d8-4c1f332064d1)
 - ![image](https://github.com/user-attachments/assets/3e9048fd-abc8-4bbb-8a2f-aa75eb281e16)
 
+
+
 # コントロールプレーン例
 - kube-controller-manager: **コンテナの実行数維持はじめ基本的な管理**を担うコントローラ
 - kube-scheduler: **コンテナのデプロイ時にそのスケジューリング**（実行ノードの選択）を行うスケジューラ
