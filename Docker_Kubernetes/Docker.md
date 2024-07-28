@@ -79,3 +79,43 @@
     EOF
     ```
   - ![image](https://github.com/user-attachments/assets/050c1cd8-5abf-49bf-b593-c8ee315e3ac8)
+
+# コンテナイメージの中身を見る
+- ```
+  mkdir dumpimage
+  docker save [イメージ名]:[イメージタグ] | tar -xC ./dumpimage
+  tree ./dumpimage
+
+  ./dumpimage
+  ├── 2ff43702bbf2ca08b5bc62d957b58da255ac0b9689cdee584dac9c88adfabae5
+  │   ├── json
+  │   ├── layer.tar
+  │   └── VERSION
+  ├── 5e3651f223dd3eae507cc0251c71fbb3fa91eeaa5442a053385e921a126c613e.json
+  ├── 9c78f74ad967b8929d1515b5f4ded20539f46fd7147fc56e9d15470427a5fa54
+  │   ├── json
+  │   ├── layer.tar
+  │   └── VERSION
+  ├── manifest.json
+  └── repositories
+
+  2 directories, 9 files
+  ```
+  - コンテナが用いる**ルートファイルシステムのデータ**：layer.tar
+  - 実行コマンドや環境変数など、**実行環境を再現するための情報**：5e36……（省略）……613e.json
+  - **イメージの構成に関する情報**：manifest.json、repositories
+  - その他（**過去の仕様との互換性のために保持されるファイル群**）：VERSION、json
+- ルートファイルシステムのデータに注目する
+  - ```
+    tar --list -f ./dumpimage/9c78f74ad967b8929d1515b5f4ded20539f46fd7147fc56e9d15470427a5fa54/layer.tar | head -n 10
+    bin
+    boot/
+    dev/
+    etc/
+    etc/.pwd.lock
+    etc/adduser.conf
+    etc/alternatives/
+    etc/alternatives/README
+    etc/alternatives/awk
+    etc/alternatives/nawk
+    ```
