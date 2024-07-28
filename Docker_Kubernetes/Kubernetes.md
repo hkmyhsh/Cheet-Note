@@ -33,18 +33,18 @@
     spec:
       replicas: 1
       selector:
-       matchLabels:
-         app: nginx
-      template:
-       metadata:
-         labels:
+        matchLabels:
           app: nginx
+      template:
+        metadata:
+          labels:
+            app: nginx
        spec:
          containers:
          - name: nginx
-          image: nginx:1.25  # nginxイメージをコンテナとして実行 
-          ports:
-          - containerPort: 80
+           image: nginx:1.25  # nginxイメージをコンテナとして実行 
+           ports:
+             - containerPort: 80
     ```
 - マニフェストを使ってデプロイ
   - `kubectl app;y -f nginx-deployment.yaml`
@@ -55,4 +55,47 @@
     deployment.apps/nginx-deployment   1/1     1            1           7s
     NAME                                    READY   STATUS    RESTARTS   AGE
     pod/nginx-deployment-79b55879bb-wj464   1/1     Running   0          7s
+    ```
+
+# Pod
+- Kubernetesにおける基本的なデプロイ単位
+- 一つ以上のコンテナ群をまとめたもの
+- ![image](https://github.com/user-attachments/assets/ea7ce874-1a15-40e1-b5bc-4413425e9b4d)
+- マニフェスト例
+  - ```
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: example-pod
+    spec:
+      containers:
+      # 共有ボリュームのデータを80番ポートで公開するnginxコンテナ 
+    - name: nginx
+      image: nginx:1.25
+      ports:
+      - containerPort: 80
+      # コンテナ間で共有するボリュームを「/usr/share/nginx/html/」にマウント 
+      volumeMounts:
+      - mountPath: /usr/share/nginx/html/
+      name: docroot
+      # 共有ボリュームにデータを書き込むコンテナ 
+      - name: alpine
+        image: alpine:3.18
+        command: ["sh"]
+        args:
+        - -euc
+        - |
+          for i in $(seq 1 10) ; do
+            echo '{"date": "'$(date)'"}' >> /mnt/date.json
+            sleep 3
+            done ; sleep infinity
+        # コンテナ間で共有するボリュームを「/mnt」にマウント 
+        volumeMounts:
+        - mountPath: /mnt/
+          name: docroot
+        # コンテナ間で共有するボリューム(後述するemptyDirを利用) 
+      volumes:
+      - name: docroot
+        emptyDir:
+          sizeLimit: 500Mi
     ```
