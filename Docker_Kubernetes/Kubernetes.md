@@ -40,11 +40,11 @@
       replicas: 1
       selector:
         matchLabels:
-          app: nginx
+          app: nginx # ラベルでPodを絞り込み
       template:
         metadata:
           labels:
-            app: nginx
+            app: nginx # 各Podラベル付与
        spec:
          containers:
          - name: nginx
@@ -109,3 +109,7 @@
   - 2つめは alpine コンテナ: シェルスクリプトを実行し、一定時間毎にタイムスタンプをファイルに書き込む
     - 2つのコンテナは `docroot` と名付けたボリュームを共有する* Kubernetesを管理するストレージ領域
     - このボリュームを介して、alpineが書き込むデータがnginxコンテナに共有され、nginxサーバがそれを80番で公開する
+
+# ラベルとアノテーション
+- PodなどのKubernetesの**管理対象をグルーピング / 追加情報を付与**する機能
+- 例:![image](https://github.com/user-attachments/assets/59095450-aec9-4b98-9af5-87ceb0799289)
