@@ -114,3 +114,6 @@ aws sts get-caller-identity
 aws ecr get-authorization-token --region ap-northeast-1 >/dev/null
 ```
 > ポイント
+> ・Private DNS 有効なVPCエンドポイント利用時は、NO_PROXYに対象サービス（s3.<region>.amazonaws.com など）を入れてプロキシをバイパスする
+> ・ECR/ECR API/STS/LogsS3 等、必要なエンドポイントがAVAILABLEかつ適切なSGで許可されているか
+> ・CoreDNSの上流にRoute53Resolver（アウトバウンドエンドポイント）や社内DNSを使う場合、検索ドメインや転送ルールの整合性を点検
