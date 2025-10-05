@@ -66,7 +66,7 @@ kubectl -n <ns> describe ing <ing>
   - Ingress注釈ミス（ALB/NLB向けannotations）
   - CodeDNSの上流解決先が社内DNS/Route53Resolverとズレ
 # 経路別チェック
-- 外部（社内拠点）→DX→VPC→EKS（内部）
+## 外部（社内拠点）→DX→VPC→EKS（内部 ALB/NLB）
 ```
 
 ```
