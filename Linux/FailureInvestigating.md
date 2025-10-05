@@ -16,7 +16,8 @@ sudo yum install -y curl ca-certificates iproute jq bind-utils lsof tcpdump \
 ```mermaid
 flowchart TD
 A[外部からアクセス不可] --> B{DNS 想定IP?} 
-B -->|NG| BN[DNS設定/伝播見直し] 
+B -->|NG| BN[DNS設定/伝播見直し]
+B -->|OK| C{SYN 到達? (tcpdump)}
 ```
 
 # 一次切り分け
