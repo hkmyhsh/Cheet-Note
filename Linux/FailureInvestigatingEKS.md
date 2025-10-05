@@ -67,7 +67,7 @@ kubectl -n <ns> describe ing <ing>
   - CodeDNSの上流解決先が社内DNS/Route53Resolverとズレ
 # 経路別チェック
 ## 外部（社内拠点）→DX→VPC→EKS（内部 ALB/NLB）
-```
+- DNS（社内 DNS/Private Hosted Zone）
 
 ```
 
