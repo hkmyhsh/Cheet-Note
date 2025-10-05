@@ -113,16 +113,4 @@ dig +short s3.ap-northeast-1.amazonaws.com
 aws sts get-caller-identity
 aws ecr get-authorization-token --region ap-northeast-1 >/dev/null
 ```
-
-- aaa
-```
-
-```
-- aaa
-```
-
-```
-- aaa
-```
-
-```
+> ポイント
