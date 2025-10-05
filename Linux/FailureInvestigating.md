@@ -13,7 +13,7 @@ sudo yum install -y curl ca-certificates iproute jq bind-utils lsof tcpdump \
 - （任意）ネットワーク調査用コンテナ：nicolaka/netshoot / praqma/network-multitool
 
 # ざっくりとして事象切り分けフロー
-mermaid```
+```mermaid
 flowchart TD
 A[外部からアクセス不可] --> B{DNS 想定IP?}
 B -- NG --> B1[DNS設定/伝播見直し]
