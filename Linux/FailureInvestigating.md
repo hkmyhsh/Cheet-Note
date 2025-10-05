@@ -17,7 +17,7 @@ sudo yum install -y curl ca-certificates iproute jq bind-utils lsof tcpdump \
 flowchart TD
 A[外部からアクセス不可] --> B[DNS 想定IP?]
 B -- NG --> B1[DNS設定/伝播見直し]
-B -- OK --> C[到達? (tcpdump)]
+B -- OK --> C[SYN到達したか (tcpdump)]
 C -- NG --> C1[上流/LB/ネットワーク経路]
 C -- OK --> D[ポートLISTEN?]
 D -- NG --> D1[サービス起動/ListenAddr/公開設定]
