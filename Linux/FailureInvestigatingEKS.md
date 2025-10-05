@@ -68,33 +68,50 @@ kubectl -n <ns> describe ing <ing>
 # 経路別チェック
 ## 外部（社内拠点）→DX→VPC→EKS（内部 ALB/NLB）
 - DNS（社内 DNS/Private Hosted Zone）
+```
+# 社内端末から FQDN -> 内部ALB/NLBの名前/プライベートIPへ解決するか
+nslookup app.corp.example.com
+```
+- LBの状態（ALS CLI）
+```
+# 既知の DNS 名から LB を特定
+DNS="<lb-dns-from-k8s-status>"
+LB_ARN=$(aws elbv2 describe-load-balancers \
+  --query "LoadBalancers[?DNSName=='${DNS}'].LoadBalancerArn" -o text)
 
+aws elbv2 describe-target-groups --load-balancer-arn "$LB_ARN"
+TG_ARN="<上の出力から>"
+aws elbv2 describe-target-health --target-group-arn "$TG_ARN"
 ```
-
-- aaa
+- セキュリティ協会
 ```
-
+# LB / Node / Pod へ関連する SG の入出力を点検
+aws ec2 describe-security-groups --group-ids <sg-ids> \
+  --query 'SecurityGroups[*].{id:GroupId,ingress:IpPermissions,egress:IpPermissionsEgress}'
+# ルート/NACL
+aws ec2 describe-route-tables --filters Name=vpc-id,Values=<vpc-xxx> \
+  --query 'RouteTables[*].{id:RouteTableId,routes:Routes}'
 ```
-- aaa
+- Pod 側リスン/Readiness
 ```
-
+kubectl -n <ns> get pods -o wide -l app=<your-app>
+kubectl -n <ns> describe pod <pod>
+kubectl -n <ns> logs <pod> --tail=200
+kubectl -n <ns> exec -it <pod> -- ss -lntp
 ```
-- aaa
+## Pod→社外（①社内プロキシ経由、②VPCエンドポイント直行）
+- podからの実態確認（エフェメラル診断Pod）
 ```
-
-```
-
-- aaa
-```
-
-```
-- aaa
-```
-
-```
-- aaa
-```
-
+# 同一NS/ネットワークで起動して試験
+kubectl -n <ns> run diag --rm -it --restart=Never \
+  --image=nicolaka/netshoot -- bash
+# 以降は diag コンテナ内:
+env | grep -i _proxy
+curl -v -x http://proxy.local:8080 https://www.google.com/
+# VPCエンドポイント先の疎通（Private DNS）
+dig +short s3.ap-northeast-1.amazonaws.com
+aws sts get-caller-identity
+aws ecr get-authorization-token --region ap-northeast-1 >/dev/null
 ```
 
 - aaa
