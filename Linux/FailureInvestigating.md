@@ -15,17 +15,17 @@ sudo yum install -y curl ca-certificates iproute jq bind-utils lsof tcpdump \
 # ざっくりとして事象切り分けフロー
 ```mermaid
 flowchart TD
- A[外部からアクセス不可] --> B{DNS 想定IP?}
- B -->|NG| B1[DNS設定/伝播見直し]
- B -->|OK| C{SYN 到達? (tcpdump)}
- C -->|NG| C1[上流/LB/ネットワーク経路]
- C -->|OK| D{ポート LISTEN?}
- D -->|NG| D1[サービス起動 / ListenAddr / 公開設定]
- D -->|OK| E{FW / DOCKER-USER で遮断?}
- E -->|YES| E1[ルール修正]
- E -->|NO| F{アプリ応答? (curl localhost)}
- F -->|NG| F1[アプリログ / 依存先 / TLS]
- F -->|OK| G[クライアント側 / 途中装置を再確認]
+       A[外部からアクセス不可] --> B{DNS 想定IP?}
+       B -->|NG| B1[DNS設定/伝播見直し]
+       B -->|OK| C{SYN 到達? (tcpdump)}
+       C -->|NG| C1[上流/LB/ネットワーク経路]
+       C -->|OK| D{ポート LISTEN?}
+       D -->|NG| D1[サービス起動 / ListenAddr / 公開設定]
+       D -->|OK| E{FW / DOCKER-USER で遮断?}
+       E -->|YES| E1[ルール修正]
+       E -->|NO| F{アプリ応答? (curl localhost)}
+       F -->|NG| F1[アプリログ / 依存先 / TLS]
+       F -->|OK| G[クライアント側 / 途中装置を再確認]
 ```
 
 # 一次切り分け
