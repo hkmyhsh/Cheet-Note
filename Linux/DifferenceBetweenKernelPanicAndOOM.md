@@ -15,6 +15,14 @@
 | 代表ログ例 | `Out of memory: Kill process 1234 (java)` | `Kernel panic - not syncing: Fatal exception` |
 | 運用設計での制御性 | 高い（制限・チューニング可能） | 低〜中（HW/バグ依存） |
 
+# OOMとPanicの設計思想の違い
+
+| 観点 | OOM (Out Of Memory) | Kernel Panic |
+|------|---------------------|--------------|
+| 予測可能性 | 高い | 低い |
+| 設計で防げるか | ほぼ可能 | 一部のみ= |
+| 監視設計 | 数値中心 | ログ中心 |
+
 # OOM と Panic の決定的な違い
 
 ## OOMの場合
