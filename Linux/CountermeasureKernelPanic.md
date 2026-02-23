@@ -28,6 +28,15 @@
 Kernel panic - not syncing: Fatal exception
 ```
 
+## Kernel Panic の内部動作
+
+**カーネルで回復不能エラー発生**
+**CPU停止**
+
+```
+panic("Fatal exception");
+```
+
 ## 発生している内部状態（技術的観点）
 - カーネルパニック時は通常以下のいずれかが発生
   - カーネル空間で不正メモリアクセス（NULL参照など）
@@ -38,9 +47,45 @@ Kernel panic - not syncing: Fatal exception
   - OOM Killerすら機能しないメモリ破壊
 
 - Linuxでは `panic()` 関数が呼び出され、下記が実行される
-- ログ出力
-- sync試行
-- CPU停止 or 自動再起動
+  - ログ出力
+  - sync試行
+  - CPU停止 or 自動再起動
+
+# KernelPanicログの見方
+
+- 典型例
+
+```
+Kernel panic - not syncing: Fatal exception
+CPU: 0 PID: 1 Comm: swapper/0
+Call Trace:
+ dump_stack
+ panic
+ do_page_fault
+```
+
+## 重要ポイント
+
+### panic理由
+
+```
+not syncing: Fatal exception
+→ 理由はここに書いてある
+```
+
+### Call Trace
+
+```
+Call Trace:
+→ どの関数で落ちたか
+```
+
+### 直前メッセージ
+
+```
+Unable to handle kernel NULL pointer dereference
+→ これが本質原因
+```
 
 # よくある原因
 
