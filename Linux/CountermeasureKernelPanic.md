@@ -26,3 +26,22 @@ Kernel panic - not syncing: Fatal exception
 - ログ出力
 - sync試行
 - CPU停止 or 自動再起動
+
+# よくある原因
+
+## ハードウェア障害
+	•	メモリエラー（ECC未検出）
+	•	ディスク故障
+	•	CPU過熱
+	•	電源不安定
+
+### 兆候
+	•	不規則発生
+	•	ログにMCE（Machine Check Exception）
+
+### 確認方法
+
+```
+dmesg -T | grep -i error
+journalctl -k -b -1
+```
