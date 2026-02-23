@@ -37,3 +37,19 @@ journalctl -k -b -1
 # もしくは
 /var/crash/
 ```
+
+## 体系的整理
+
+```
+Memory Pressure
+   ↓
+[User Space]
+   ↓
+OOM Killer → Process Kill → OS survives
+
+[Kernel Space]
+   ↓
+Memory corruption / Fatal fault
+   ↓
+panic() → OS stops
+```
