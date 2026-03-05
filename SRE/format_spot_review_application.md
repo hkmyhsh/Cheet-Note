@@ -1,4 +1,4 @@
-# Review Snapshot（提出用：1〜2分で読める）
+# Review Snapshot（提出用：1〜2分で読めるようにする）
 
 ## 目的（何のための変更か）
 - 
