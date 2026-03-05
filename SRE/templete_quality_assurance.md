@@ -23,6 +23,7 @@ flowchart TB
 ```
 
 ```
+mermaid
 flowchart TB
   A[要件定義<br/>R-IDを確定] --> B[トレーサビリティ表<br/>R→D→I→V→REL]
   B --> C[基本設計<br/>D-IDで分割しRに紐付け]
