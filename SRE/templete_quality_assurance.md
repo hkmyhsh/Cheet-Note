@@ -20,7 +20,7 @@ flowchart TB
   J[スポットレビュー用 Snapshot] --- B
   J --- G
   J --- H
-
+```
 
 ```
 flowchart TB
