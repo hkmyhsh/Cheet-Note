@@ -180,25 +180,6 @@ O --> P[インシデント記録]
 
 **探せない**から
 
-#### 構造例
-
-```
-障害
-│
-├─ Jenkins
-│   ├─ Build失敗
-│   ├─ Agent接続不可
-│   └─ OOM
-│
-├─ Nexus
-│   ├─ Artifact取得失敗
-│   └─ Repository corrupt
-│
-└─ GitHub
-    ├─ Actions runner down
-    └─ API rate limit
-```
-
 #### 入口ページ
 
 ```
