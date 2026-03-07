@@ -22,9 +22,6 @@
 | 要件ID | 要件 | 基本設計 | 詳細設計 | 実装 | 検証 | リリース |
 |------|------|------|------|------|------|------|
 | R1 | Runner自動スケール | ARC autoscaling | RunnerDeployment | Helm | scale test | OK |
-| R2 | AWS認証 | IRSA | ServiceAccount | IAM Role | IAM test | OK |
-| R3 | GitHub接続 | ARC Controller | controller config | Helm | workflow test | OK |
-| R4 | 監視 | Prometheus | metrics exporter | Helm | monitoring test | OK |
 
 ```markdown
 # 要件トレーサビリティ
@@ -32,9 +29,6 @@
 | 要件ID | 要件 | 基本設計 | 詳細設計 | 実装 | 検証 | リリース |
 |------|------|------|------|------|------|------|
 | R1 | Runner自動スケール | ARC autoscaling | RunnerDeployment | Helm | scale test | OK |
-| R2 | AWS認証 | IRSA | ServiceAccount | IAM Role | IAM test | OK |
-| R3 | GitHub接続 | ARC Controller | controller config | Helm | workflow test | OK |
-| R4 | 監視 | Prometheus | metrics exporter | Helm | monitoring test | OK |
 ```
 
 # トレーサビリティ表作成タイミング
