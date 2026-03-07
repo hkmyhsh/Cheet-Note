@@ -179,21 +179,7 @@ O --> P[インシデント記録]
 ### Runbookが役に立たない理由
 
 **探せない**から
-
-#### 入口ページ
-
-```
-# CI基盤 障害入口
-
-・ビルドが動かない
-→ Jenkins Runbook
-
-・Artifact取得できない
-→ Nexus Runbook
-
-・Runner停止
-→ EKS Runner Runbook
-```
+**入口ページ**用意する
 
 ## 疑似障害（GameDay）
 
