@@ -214,25 +214,6 @@ O --> P[インシデント記録]
 → EKS Runner Runbook
 ```
 
-#### Runbook導線
-
-```
-CI Incident Entry
-
-├ Jenkins
-│ ├ Agent offline
-│ ├ Queue増加
-│ └ OOM
-│
-├ Nexus
-│ ├ Artifact取得失敗
-│ └ Repository corruption
-│
-└ GitHub
-  ├ Runner停止
-  └ API rate limit
-```
-
 ## 疑似障害（GameDay）
 
 ### 注意事項
