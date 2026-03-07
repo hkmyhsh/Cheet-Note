@@ -32,6 +32,22 @@ E --> T
 T --> R[レビュー]
 ```
 
+```mermaid
+flowchart LR
+
+A[要件] --> B[設計]
+B --> C[実装]
+C --> D[検証]
+
+A --> T[トレーサビリティ]
+B --> T
+C --> T
+D --> T
+
+T --> R[レビュー]
+```
+
+
 ```
 mermaid
 flowchart TD
@@ -47,6 +63,22 @@ B --> T
 C --> T
 D --> T
 E --> T
+
+T --> R[レビュー]
+```
+
+```
+mermaid
+flowchart LR
+
+A[要件] --> B[設計]
+B --> C[実装]
+C --> D[検証]
+
+A --> T[トレーサビリティ]
+B --> T
+C --> T
+D --> T
 
 T --> R[レビュー]
 ```
